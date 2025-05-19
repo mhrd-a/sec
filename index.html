@@ -1,2 +1,1265 @@
-<h1>Hello, world!</h1>
-<p>This is my GitHub Pages site.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Business Model Canvas</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f0f4f8;
+}
+.canvas-section {
+background-color: white;
+border-radius: 8px;
+box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+transition: all 0.2s ease;
+position: relative;
+}
+.canvas-section:hover {
+box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+.sticky-note {
+cursor: move;
+box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+transition: transform 0.1s ease, box-shadow 0.1s ease;
+position: absolute;
+z-index: 10;
+width: 110px;
+height: 80px;
+}
+.sticky-note:hover {
+box-shadow: 3px 3px 8px rgba(0,0,0,0.15);
+transform: scale(1.02);
+}
+.sticky-note .note-controls {
+opacity: 0;
+transition: opacity 0.2s ease;
+}
+.sticky-note:hover .note-controls {
+opacity: 1;
+}
+.sticky-note.dragging {
+opacity: 0.8;
+transform: scale(1.05);
+z-index: 100;
+}
+.color-option {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+cursor: pointer;
+transition: transform 0.1s ease;
+}
+.color-option:hover {
+transform: scale(1.2);
+}
+.tooltip {
+position: absolute;
+background-color: #333;
+color: white;
+padding: 5px 10px;
+border-radius: 4px;
+font-size: 12px;
+z-index: 100;
+opacity: 0;
+transition: opacity 0.3s;
+pointer-events: none;
+max-width: 200px;
+}
+.section-header {
+position: relative;
+}
+.section-header:hover .tooltip {
+opacity: 1;
+}
+.template-card {
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.template-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+}
+.note-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0;
+margin: 0;
+}
+.grid-cell {
+position: absolute;
+border: 1px dashed transparent;
+transition: background-color 0.2s;
+}
+.grid-cell:hover {
+background-color: rgba(0, 0, 0, 0.03);
+border-color: rgba(0, 0, 0, 0.1);
+}
+.grid-cell.occupied {
+/* Visual indicator for debugging */
+/* background-color: rgba(255, 0, 0, 0.05); */
+}
+</style>
+</head>
+<body>
+<div class="container mx-auto px-2 py-4 max-w-7xl">
+<header class="mb-4 text-center">
+<h1 class="text-3xl font-bold text-indigo-700 mb-1">Business Model Canvas Builder</h1>
+<div class="max-w-md mx-auto">
+<input type="text" id="projectName" placeholder="Enter Project Name" class="w-full px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center text-lg font-medium">
+</div>
+</header>
+
+<div class="flex justify-between items-center mb-3">
+<div class="flex space-x-1">
+<button id="addNoteBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg flex items-center text-sm">
+<i class="fas fa-plus mr-1"></i> Add Note
+</button>
+<div class="relative">
+<button id="templatesBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1 rounded-lg flex items-center text-sm">
+<i class="fas fa-file-alt mr-1"></i> Templates
+</button>
+<div id="templatesDropdown" class="hidden absolute left-0 mt-1 w-64 bg-white rounded-lg shadow-lg z-50 p-3">
+<h3 class="font-semibold mb-1 text-sm">Sample Templates</h3>
+<div class="space-y-1">
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="pokemon">Pokémon Go</button>
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="openai">OpenAI</button>
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="netflix">Netflix</button>
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="uber">Uber</button>
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="airbnb">Airbnb</button>
+<button class="template-btn w-full text-left px-2 py-1 hover:bg-gray-100 rounded text-sm" data-template="spotify">Spotify</button>
+</div>
+</div>
+</div>
+</div>
+<div class="flex space-x-1">
+<button id="clearBtn" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-3 py-1 rounded-lg flex items-center text-sm">
+<i class="fas fa-trash-alt mr-1"></i> Clear
+</button>
+<button id="exportBtn" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg flex items-center text-sm">
+<i class="fas fa-download mr-1"></i> Export
+</button>
+</div>
+</div>
+
+<div id="canvas" class="grid grid-cols-10 gap-2 h-[600px] mb-4">
+<!-- Key Partners -->
+<div id="key-partners" class="canvas-section col-span-2 row-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Key Partners</h2>
+<div class="tooltip">Who are your key partners and suppliers? What resources are you acquiring from them?</div>
+</div>
+<div class="grid-container" data-section="key-partners"></div>
+</div>
+
+<!-- Key Activities -->
+<div id="key-activities" class="canvas-section col-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Key Activities</h2>
+<div class="tooltip">What key activities does your value proposition require?</div>
+</div>
+<div class="grid-container" data-section="key-activities"></div>
+</div>
+
+<!-- Value Propositions -->
+<div id="value-propositions" class="canvas-section col-span-2 row-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Value Propositions</h2>
+<div class="tooltip">What value do you deliver to the customer? Which customer problems are you solving?</div>
+</div>
+<div class="grid-container" data-section="value-propositions"></div>
+</div>
+
+<!-- Customer Relationships -->
+<div id="customer-relationships" class="canvas-section col-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Customer Relationships</h2>
+<div class="tooltip">What type of relationship does each customer segment expect?</div>
+</div>
+<div class="grid-container" data-section="customer-relationships"></div>
+</div>
+
+<!-- Customer Segments -->
+<div id="customer-segments" class="canvas-section col-span-2 row-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Customer Segments</h2>
+<div class="tooltip">Who are you creating value for? Who are your most important customers?</div>
+</div>
+<div class="grid-container" data-section="customer-segments"></div>
+</div>
+
+<!-- Key Resources -->
+<div id="key-resources" class="canvas-section col-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Key Resources</h2>
+<div class="tooltip">What key resources does your value proposition require?</div>
+</div>
+<div class="grid-container" data-section="key-resources"></div>
+</div>
+
+<!-- Channels -->
+<div id="channels" class="canvas-section col-span-2 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Channels</h2>
+<div class="tooltip">Through which channels do your customer segments want to be reached?</div>
+</div>
+<div class="grid-container" data-section="channels"></div>
+</div>
+
+<!-- Cost Structure -->
+<div id="cost-structure" class="canvas-section col-span-5 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Cost Structure</h2>
+<div class="tooltip">What are the most important costs inherent in your business model?</div>
+</div>
+<div class="grid-container" data-section="cost-structure"></div>
+</div>
+
+<!-- Revenue Streams -->
+<div id="revenue-streams" class="canvas-section col-span-5 p-3 overflow-hidden relative">
+<div class="section-header mb-1">
+<h2 class="font-bold text-base text-indigo-700">Revenue Streams</h2>
+<div class="tooltip">For what value are your customers willing to pay? How do they prefer to pay?</div>
+</div>
+<div class="grid-container" data-section="revenue-streams"></div>
+</div>
+</div>
+
+<!-- Note Editor Modal -->
+<div id="noteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div class="bg-white rounded-lg p-4 w-80">
+<h3 class="text-lg font-bold mb-3">Edit Note</h3>
+<textarea id="noteText" class="w-full border border-gray-300 rounded p-2 mb-3 h-28" placeholder="Enter your note text..."></textarea>
+<div class="mb-3">
+<p class="text-xs text-gray-600 mb-1">Select color:</p>
+<div class="flex space-x-2">
+<div class="color-option bg-yellow-200 border border-gray-300" data-color="bg-yellow-200"></div>
+<div class="color-option bg-blue-200 border border-gray-300" data-color="bg-blue-200"></div>
+<div class="color-option bg-green-200 border border-gray-300" data-color="bg-green-200"></div>
+<div class="color-option bg-pink-200 border border-gray-300" data-color="bg-pink-200"></div>
+<div class="color-option bg-purple-200 border border-gray-300" data-color="bg-purple-200"></div>
+<div class="color-option bg-orange-200 border border-gray-300" data-color="bg-orange-200"></div>
+</div>
+</div>
+<div class="flex justify-end space-x-2">
+<button id="cancelNoteBtn" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 text-sm">Cancel</button>
+<button id="saveNoteBtn" class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">Save</button>
+</div>
+</div>
+</div>
+
+<!-- Export Modal -->
+<div id="exportModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div class="bg-white rounded-lg p-4 w-80">
+<h3 class="text-lg font-bold mb-3">Export Canvas</h3>
+<p class="mb-3 text-sm text-gray-600">Choose your export format:</p>
+<div class="space-y-2 mb-4">
+<button class="export-option w-full text-left px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center" data-format="png">
+<i class="fas fa-file-image text-blue-500 mr-2 text-base"></i>
+<div>
+<div class="font-medium text-sm">PNG Image</div>
+<div class="text-xs text-gray-500">Export as an image file</div>
+</div>
+</button>
+<button class="export-option w-full text-left px-3 py-2 border border-gray-300 rounded hover:bg-gray-50 flex items-center" data-format="pdf">
+<i class="fas fa-file-pdf text-red-500 mr-2 text-base"></i>
+<div>
+<div class="font-medium text-sm">PDF Document</div>
+<div class="text-xs text-gray-500">Export as a PDF document</div>
+</div>
+</button>
+</div>
+<div class="flex justify-end">
+<button id="closeExportBtn" class="px-3 py-1 border border-gray-300 rounded hover:bg-gray-100 text-sm">Close</button>
+</div>
+</div>
+</div>
+
+<!-- Templates Gallery Modal -->
+<div id="templatesModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+<div class="bg-white rounded-lg p-4 w-3/4 max-w-4xl max-h-[80vh] overflow-y-auto">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-bold">Template Gallery</h3>
+<button id="closeTemplatesBtn" class="text-gray-500 hover:text-gray-700">
+<i class="fas fa-times text-lg"></i>
+</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+<!-- Template Cards -->
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-indigo-50">
+<h4 class="font-bold text-base mb-0">Pokémon Go</h4>
+<p class="text-xs text-gray-600">Mobile AR gaming platform</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Mobile gamers, Pokémon fans</li>
+<li><span class="font-medium">Value Props:</span> AR gaming, social interaction</li>
+<li><span class="font-medium">Revenue:</span> In-app purchases, sponsored locations</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="pokemon">
+Load Template
+</button>
+</div>
+</div>
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-blue-50">
+<h4 class="font-bold text-base mb-0">OpenAI</h4>
+<p class="text-xs text-gray-600">AI research and products</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Developers, businesses, researchers</li>
+<li><span class="font-medium">Value Props:</span> Advanced AI models, API access</li>
+<li><span class="font-medium">Revenue:</span> Subscriptions, API usage fees</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="openai">
+Load Template
+</button>
+</div>
+</div>
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-red-50">
+<h4 class="font-bold text-base mb-0">Netflix</h4>
+<p class="text-xs text-gray-600">Streaming entertainment service</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Streaming enthusiasts, families</li>
+<li><span class="font-medium">Value Props:</span> On-demand content, originals</li>
+<li><span class="font-medium">Revenue:</span> Monthly subscriptions</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="netflix">
+Load Template
+</button>
+</div>
+</div>
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-green-50">
+<h4 class="font-bold text-base mb-0">Uber</h4>
+<p class="text-xs text-gray-600">Ride-sharing platform</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Urban commuters, travelers</li>
+<li><span class="font-medium">Value Props:</span> Convenient rides, flexible work</li>
+<li><span class="font-medium">Revenue:</span> Ride fees, service charges</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="uber">
+Load Template
+</button>
+</div>
+</div>
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-pink-50">
+<h4 class="font-bold text-base mb-0">Airbnb</h4>
+<p class="text-xs text-gray-600">Accommodation marketplace</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Travelers, property owners</li>
+<li><span class="font-medium">Value Props:</span> Unique stays, extra income</li>
+<li><span class="font-medium">Revenue:</span> Service fees, host commissions</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="airbnb">
+Load Template
+</button>
+</div>
+</div>
+<div class="template-card bg-white rounded-lg overflow-hidden shadow-md border border-gray-200">
+<div class="p-3 bg-green-50">
+<h4 class="font-bold text-base mb-0">Spotify</h4>
+<p class="text-xs text-gray-600">Music streaming service</p>
+</div>
+<div class="p-3">
+<ul class="text-xs space-y-1">
+<li><span class="font-medium">Customer Segments:</span> Music listeners, artists</li>
+<li><span class="font-medium">Value Props:</span> On-demand music, personalization</li>
+<li><span class="font-medium">Revenue:</span> Subscriptions, advertisements</li>
+</ul>
+<button class="load-template-btn mt-3 w-full py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm" data-template="spotify">
+Load Template
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Global variables
+let currentNoteId = null;
+let selectedColor = 'bg-yellow-200';
+let noteCounter = 0;
+let draggedElement = null;
+let initialX, initialY;
+let offsetX, offsetY;
+let originalParent = null;
+let originalPosition = null;
+let originalGridCell = null;
+// Grid configuration
+const gridConfig = {
+cellWidth: 120,
+cellHeight: 90,
+columns: 2, // Default 2 columns per section
+gridCells: {} // Will store grid cell occupancy status
+};
+// DOM elements
+const canvas = document.getElementById('canvas');
+const addNoteBtn = document.getElementById('addNoteBtn');
+const noteModal = document.getElementById('noteModal');
+const noteText = document.getElementById('noteText');
+const saveNoteBtn = document.getElementById('saveNoteBtn');
+const cancelNoteBtn = document.getElementById('cancelNoteBtn');
+const colorOptions = document.querySelectorAll('.color-option');
+const exportBtn = document.getElementById('exportBtn');
+const exportModal = document.getElementById('exportModal');
+const closeExportBtn = document.getElementById('closeExportBtn');
+const exportOptions = document.querySelectorAll('.export-option');
+const templatesBtn = document.getElementById('templatesBtn');
+const templatesDropdown = document.getElementById('templatesDropdown');
+const templatesModal = document.getElementById('templatesModal');
+const closeTemplatesBtn = document.getElementById('closeTemplatesBtn');
+const templateBtns = document.querySelectorAll('.template-btn');
+const loadTemplateBtns = document.querySelectorAll('.load-template-btn');
+const clearBtn = document.getElementById('clearBtn');
+const projectName = document.getElementById('projectName');
+// Initialize grid for each section
+function initializeGrids() {
+const sections = document.querySelectorAll('.canvas-section');
+sections.forEach(section => {
+const sectionId = section.id;
+const gridContainer = section.querySelector('.grid-container');
+// Clear existing grid
+gridContainer.innerHTML = '';
+// Calculate how many cells can fit in this section
+const sectionWidth = section.clientWidth - 24; // Accounting for padding
+const sectionHeight = section.clientHeight - 40; // Accounting for header and padding
+// Determine columns based on section width
+let columns = 2; // Default to 2 columns
+if (sectionWidth > 400) columns = 3; // Wider sections get 3 columns
+// Calculate rows based on height
+const rows = Math.floor(sectionHeight / gridConfig.cellHeight);
+// Store grid configuration for this section
+gridConfig.gridCells[sectionId] = [];
+// Create grid cells
+for (let row = 0; row < rows; row++) {
+for (let col = 0; col < columns; col++) {
+const cell = document.createElement('div');
+cell.className = 'grid-cell';
+cell.dataset.row = row;
+cell.dataset.col = col;
+cell.dataset.section = sectionId;
+cell.style.width = `${gridConfig.cellWidth}px`;
+cell.style.height = `${gridConfig.cellHeight}px`;
+cell.style.left = `${col * gridConfig.cellWidth}px`;
+cell.style.top = `${row * gridConfig.cellHeight + 30}px`; // 30px for header
+gridContainer.appendChild(cell);
+// Initialize cell as unoccupied
+if (!gridConfig.gridCells[sectionId][row]) {
+gridConfig.gridCells[sectionId][row] = [];
+}
+gridConfig.gridCells[sectionId][row][col] = false;
+}
+}
+});
+}
+// Find next available grid cell in a section
+function findAvailableCell(sectionId) {
+const sectionCells = gridConfig.gridCells[sectionId];
+if (!sectionCells) return null;
+for (let row = 0; row < sectionCells.length; row++) {
+for (let col = 0; col < sectionCells[row].length; col++) {
+if (!sectionCells[row][col]) {
+return { row, col };
+}
+}
+}
+return null; // No available cell
+}
+// Mark a grid cell as occupied or unoccupied
+function setGridCellOccupancy(sectionId, row, col, isOccupied) {
+if (gridConfig.gridCells[sectionId] &&
+gridConfig.gridCells[sectionId][row] &&
+gridConfig.gridCells[sectionId][row][col] !== undefined) {
+gridConfig.gridCells[sectionId][row][col] = isOccupied;
+// Update visual indicator for debugging
+const cell = document.querySelector(`.grid-cell[data-section="${sectionId}"][data-row="${row}"][data-col="${col}"]`);
+if (cell) {
+if (isOccupied) {
+cell.classList.add('occupied');
+} else {
+cell.classList.remove('occupied');
+}
+}
+}
+}
+// Get grid cell position from pixel coordinates
+function getGridCellFromPosition(sectionId, x, y) {
+const col = Math.floor(x / gridConfig.cellWidth);
+const row = Math.floor((y - 30) / gridConfig.cellHeight); // Adjust for header
+if (gridConfig.gridCells[sectionId] &&
+gridConfig.gridCells[sectionId][row] &&
+gridConfig.gridCells[sectionId][row][col] !== undefined) {
+return { row, col };
+}
+return null;
+}
+// Get pixel position from grid cell
+function getPositionFromGridCell(row, col) {
+return {
+left: col * gridConfig.cellWidth + 5, // 5px padding
+top: row * gridConfig.cellHeight + 35 // 30px for header + 5px padding
+};
+}
+// Event listeners
+addNoteBtn.addEventListener('click', openNoteModal);
+saveNoteBtn.addEventListener('click', saveNote);
+cancelNoteBtn.addEventListener('click', closeNoteModal);
+colorOptions.forEach(option => {
+option.addEventListener('click', () => {
+colorOptions.forEach(opt => opt.classList.remove('ring-2', 'ring-indigo-600'));
+option.classList.add('ring-2', 'ring-indigo-600');
+selectedColor = option.getAttribute('data-color');
+});
+});
+exportBtn.addEventListener('click', () => {
+exportModal.classList.remove('hidden');
+});
+closeExportBtn.addEventListener('click', () => {
+exportModal.classList.add('hidden');
+});
+exportOptions.forEach(option => {
+option.addEventListener('click', () => {
+const format = option.getAttribute('data-format');
+exportCanvas(format);
+exportModal.classList.add('hidden');
+});
+});
+templatesBtn.addEventListener('click', () => {
+templatesModal.classList.remove('hidden');
+});
+closeTemplatesBtn.addEventListener('click', () => {
+templatesModal.classList.add('hidden');
+});
+templateBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+const template = btn.getAttribute('data-template');
+loadTemplate(template);
+templatesDropdown.classList.add('hidden');
+});
+});
+loadTemplateBtns.forEach(btn => {
+btn.addEventListener('click', () => {
+const template = btn.getAttribute('data-template');
+loadTemplate(template);
+templatesModal.classList.add('hidden');
+});
+});
+clearBtn.addEventListener('click', clearCanvas);
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+if (!templatesBtn.contains(e.target) && !templatesDropdown.contains(e.target)) {
+templatesDropdown.classList.add('hidden');
+}
+});
+// Functions
+function openNoteModal(e, noteId = null) {
+noteModal.classList.remove('hidden');
+currentNoteId = noteId;
+if (noteId) {
+const note = document.getElementById(noteId);
+noteText.value = note.querySelector('p').textContent;
+selectedColor = Array.from(note.classList).find(cls => cls.startsWith('bg-'));
+colorOptions.forEach(option => {
+const color = option.getAttribute('data-color');
+if (color === selectedColor) {
+option.classList.add('ring-2', 'ring-indigo-600');
+} else {
+option.classList.remove('ring-2', 'ring-indigo-600');
+}
+});
+} else {
+noteText.value = '';
+colorOptions[0].click(); // Select first color by default
+}
+noteText.focus();
+}
+function closeNoteModal() {
+noteModal.classList.add('hidden');
+currentNoteId = null;
+}
+function saveNote() {
+const text = noteText.value.trim();
+if (!text) {
+alert('Please enter some text for your note.');
+return;
+}
+if (currentNoteId) {
+// Update existing note
+const note = document.getElementById(currentNoteId);
+note.querySelector('p').textContent = text;
+note.className = note.className.replace(/bg-\w+-\d+/, selectedColor);
+} else {
+// Create new note in first section with available space
+const sections = document.querySelectorAll('.canvas-section');
+let placed = false;
+for (const section of sections) {
+const sectionId = section.id;
+const availableCell = findAvailableCell(sectionId);
+if (availableCell) {
+const { row, col } = availableCell;
+const { left, top } = getPositionFromGridCell(row, col);
+const note = createNote(text, selectedColor, left, top);
+note.dataset.row = row;
+note.dataset.col = col;
+note.dataset.section = sectionId;
+section.querySelector('.grid-container').appendChild(note);
+setGridCellOccupancy(sectionId, row, col, true);
+placed = true;
+break;
+}
+}
+if (!placed) {
+alert('No space available. Please clear some notes first.');
+closeNoteModal();
+return;
+}
+}
+closeNoteModal();
+}
+function createNote(text, color, left = 20, top = 20) {
+noteCounter++;
+const noteId = `note-${noteCounter}`;
+const note = document.createElement('div');
+note.id = noteId;
+note.className = `sticky-note ${color} p-2 rounded shadow-md`;
+note.style.left = `${left}px`;
+note.style.top = `${top}px`;
+note.innerHTML = `
+<div class="note-header">
+<div class="w-2 h-2 bg-gray-300 rounded-full cursor-move handle"></div>
+<div class="flex space-x-1 note-controls">
+<button class="edit-note text-gray-500 hover:text-gray-700">
+<i class="fas fa-edit text-xs"></i>
+</button>
+<button class="delete-note text-gray-500 hover:text-red-500">
+<i class="fas fa-times text-xs"></i>
+</button>
+</div>
+</div>
+<p class="text-xs break-words mt-1">${text}</p>
+`;
+// Add event listeners
+note.addEventListener('mousedown', startDrag);
+note.querySelector('.edit-note').addEventListener('click', (e) => {
+e.stopPropagation();
+openNoteModal(e, noteId);
+});
+note.querySelector('.delete-note').addEventListener('click', (e) => {
+e.stopPropagation();
+// Free up grid cell
+const sectionId = note.dataset.section;
+const row = parseInt(note.dataset.row);
+const col = parseInt(note.dataset.col);
+if (sectionId && !isNaN(row) && !isNaN(col)) {
+setGridCellOccupancy(sectionId, row, col, false);
+}
+note.remove();
+});
+// Add animation
+note.animate([
+{ transform: 'scale(0.8)', opacity: 0 },
+{ transform: 'scale(1)', opacity: 1 }
+], {
+duration: 200,
+easing: 'ease-out'
+});
+return note;
+}
+function startDrag(e) {
+if (!e.target.closest('.handle') && !e.target.classList.contains('sticky-note')) return;
+e.preventDefault();
+draggedElement = e.target.closest('.sticky-note');
+originalParent = draggedElement.parentNode;
+originalPosition = {
+left: draggedElement.style.left,
+top: draggedElement.style.top
+};
+// Store original grid cell
+originalGridCell = {
+section: draggedElement.dataset.section,
+row: parseInt(draggedElement.dataset.row),
+col: parseInt(draggedElement.dataset.col)
+};
+// Free up the original grid cell
+if (originalGridCell.section && !isNaN(originalGridCell.row) && !isNaN(originalGridCell.col)) {
+setGridCellOccupancy(originalGridCell.section, originalGridCell.row, originalGridCell.col, false);
+}
+// Create a clone for dragging to keep the original visible
+const clone = draggedElement.cloneNode(true);
+clone.style.opacity = "0.6";
+clone.style.pointerEvents = "none";
+clone.id = "dragging-clone";
+document.body.appendChild(clone);
+// Calculate offset
+const rect = draggedElement.getBoundingClientRect();
+offsetX = e.clientX - rect.left;
+offsetY = e.clientY - rect.top;
+// Store initial position
+initialX = e.clientX;
+initialY = e.clientY;
+// Update clone position
+updateClonePosition(e);
+document.addEventListener('mousemove', drag);
+document.addEventListener('mouseup', stopDrag);
+}
+function updateClonePosition(e) {
+const clone = document.getElementById('dragging-clone');
+if (clone) {
+clone.style.position = "fixed";
+clone.style.left = `${e.clientX - offsetX}px`;
+clone.style.top = `${e.clientY - offsetY}px`;
+clone.style.zIndex = "1000";
+}
+}
+function drag(e) {
+if (!draggedElement) return;
+// Update clone position
+updateClonePosition(e);
+// Find section under the cursor
+const sections = document.querySelectorAll('.canvas-section');
+let targetSection = null;
+sections.forEach(section => {
+const rect = section.getBoundingClientRect();
+if (
+e.clientX >= rect.left &&
+e.clientX <= rect.right &&
+e.clientY >= rect.top &&
+e.clientY <= rect.bottom
+) {
+targetSection = section;
+}
+});
+// Highlight target section
+sections.forEach(section => {
+section.classList.remove('bg-gray-50');
+});
+if (targetSection) {
+targetSection.classList.add('bg-gray-50');
+}
+}
+function stopDrag(e) {
+if (!draggedElement) return;
+// Remove the clone
+const clone = document.getElementById('dragging-clone');
+if (clone) {
+clone.remove();
+}
+// Find section under the cursor
+const sections = document.querySelectorAll('.canvas-section');
+let targetSection = null;
+sections.forEach(section => {
+const rect = section.getBoundingClientRect();
+if (
+e.clientX >= rect.left &&
+e.clientX <= rect.right &&
+e.clientY >= rect.top &&
+e.clientY <= rect.bottom
+) {
+targetSection = section;
+}
+});
+// Move note to target section
+if (targetSection) {
+const sectionId = targetSection.id;
+const gridContainer = targetSection.querySelector('.grid-container');
+// Calculate relative position within the section
+const targetRect = targetSection.getBoundingClientRect();
+const relX = e.clientX - targetRect.left;
+const relY = e.clientY - targetRect.top;
+// Find the closest grid cell
+const gridCell = getGridCellFromPosition(sectionId, relX, relY);
+if (gridCell && !gridConfig.gridCells[sectionId][gridCell.row][gridCell.col]) {
+// Cell is available, place note there
+const { left, top } = getPositionFromGridCell(gridCell.row, gridCell.col);
+// Update note position and grid data
+draggedElement.style.left = `${left}px`;
+draggedElement.style.top = `${top}px`;
+draggedElement.dataset.section = sectionId;
+draggedElement.dataset.row = gridCell.row;
+draggedElement.dataset.col = gridCell.col;
+// Mark cell as occupied
+setGridCellOccupancy(sectionId, gridCell.row, gridCell.col, true);
+// Move to new parent
+gridContainer.appendChild(draggedElement);
+// Add bounce animation
+draggedElement.animate([
+{ transform: 'translateY(-5px)' },
+{ transform: 'translateY(0)' }
+], {
+duration: 200,
+easing: 'ease-out'
+});
+} else {
+// Find any available cell in this section
+const availableCell = findAvailableCell(sectionId);
+if (availableCell) {
+const { row, col } = availableCell;
+const { left, top } = getPositionFromGridCell(row, col);
+// Update note position and grid data
+draggedElement.style.left = `${left}px`;
+draggedElement.style.top = `${top}px`;
+draggedElement.dataset.section = sectionId;
+draggedElement.dataset.row = row;
+draggedElement.dataset.col = col;
+// Mark cell as occupied
+setGridCellOccupancy(sectionId, row, col, true);
+// Move to new parent
+gridContainer.appendChild(draggedElement);
+} else {
+// No space in target section, return to original position
+returnToOriginalPosition();
+}
+}
+} else {
+// Not dropped on a valid section, return to original position
+returnToOriginalPosition();
+}
+// Remove highlighting
+sections.forEach(section => {
+section.classList.remove('bg-gray-50');
+});
+draggedElement = null;
+originalParent = null;
+originalPosition = null;
+document.removeEventListener('mousemove', drag);
+document.removeEventListener('mouseup', stopDrag);
+}
+function returnToOriginalPosition() {
+if (originalGridCell && originalGridCell.section) {
+// Re-occupy the original cell
+setGridCellOccupancy(
+originalGridCell.section,
+originalGridCell.row,
+originalGridCell.col,
+true
+);
+// Restore original position
+draggedElement.style.left = originalPosition.left;
+draggedElement.style.top = originalPosition.top;
+}
+}
+function exportCanvas(format) {
+// In a real implementation, this would use html2canvas or similar
+// to capture the canvas and export it
+alert(`Exporting as ${format.toUpperCase()}... (This would download the file in a real implementation)`);
+}
+function clearCanvas() {
+if (confirm('Are you sure you want to clear the canvas? This action cannot be undone.')) {
+const notes = document.querySelectorAll('.sticky-note');
+notes.forEach(note => note.remove());
+projectName.value = '';
+// Reset grid occupancy
+Object.keys(gridConfig.gridCells).forEach(sectionId => {
+const sectionCells = gridConfig.gridCells[sectionId];
+for (let row = 0; row < sectionCells.length; row++) {
+for (let col = 0; col < sectionCells[row].length; col++) {
+setGridCellOccupancy(sectionId, row, col, false);
+}
+}
+});
+}
+}
+function loadTemplate(template) {
+// Clear existing notes
+clearCanvas();
+// Set project name based on template
+const templateNames = {
+pokemon: "Pokémon Go Business Model",
+openai: "OpenAI Business Model",
+netflix: "Netflix Business Model",
+uber: "Uber Business Model",
+airbnb: "Airbnb Business Model",
+spotify: "Spotify Business Model"
+};
+projectName.value = templateNames[template] || "";
+// Load template data
+const templates = {
+pokemon: {
+'key-partners': [
+{ text: 'The Pokémon Company', color: 'bg-blue-200' },
+{ text: 'Sponsors (McDonald\'s, Starbucks)', color: 'bg-blue-200' },
+{ text: 'App stores', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'Game development', color: 'bg-green-200' },
+{ text: 'Server maintenance', color: 'bg-green-200' },
+{ text: 'Event organization', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'AR technology', color: 'bg-purple-200' },
+{ text: 'Pokémon IP', color: 'bg-purple-200' },
+{ text: 'Mobile app', color: 'bg-purple-200' },
+{ text: 'Location data', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'Free-to-play AR gaming', color: 'bg-yellow-200' },
+{ text: 'Social interaction', color: 'bg-yellow-200' },
+{ text: 'Physical activity', color: 'bg-yellow-200' },
+{ text: 'Nostalgia-driven Pokémon collecting', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Community-driven (events, forums)', color: 'bg-pink-200' },
+{ text: 'Automated (in-game notifications)', color: 'bg-pink-200' },
+{ text: 'Self-service (app tutorials)', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'App stores (iOS, Android)', color: 'bg-orange-200' },
+{ text: 'Social media', color: 'bg-orange-200' },
+{ text: 'In-game events', color: 'bg-orange-200' },
+{ text: 'Niantic website', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Mobile gamers', color: 'bg-blue-200' },
+{ text: 'Pokémon fans', color: 'bg-blue-200' },
+{ text: 'Families', color: 'bg-blue-200' },
+{ text: 'Casual players', color: 'bg-blue-200' },
+{ text: 'Location-based AR enthusiasts', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Server costs', color: 'bg-green-200' },
+{ text: 'Development', color: 'bg-green-200' },
+{ text: 'Licensing fees', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'In-app purchases (PokéCoins)', color: 'bg-yellow-200' },
+{ text: 'Sponsored locations (e.g., Starbucks PokéStops)', color: 'bg-yellow-200' },
+{ text: 'Event tickets', color: 'bg-yellow-200' }
+]
+},
+openai: {
+'key-partners': [
+{ text: 'Microsoft (cloud infrastructure)', color: 'bg-blue-200' },
+{ text: 'Research institutions', color: 'bg-blue-200' },
+{ text: 'Enterprise clients', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'AI research', color: 'bg-green-200' },
+{ text: 'Model training', color: 'bg-green-200' },
+{ text: 'API maintenance', color: 'bg-green-200' },
+{ text: 'Customer support', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'AI models', color: 'bg-purple-200' },
+{ text: 'Cloud infrastructure', color: 'bg-purple-200' },
+{ text: 'Research team', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'Advanced AI models (ChatGPT, DALL·E)', color: 'bg-yellow-200' },
+{ text: 'API access', color: 'bg-yellow-200' },
+{ text: 'Research advancements', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Self-service (API access)', color: 'bg-pink-200' },
+{ text: 'Dedicated support (enterprise clients)', color: 'bg-pink-200' },
+{ text: 'Community forums', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'Website', color: 'bg-orange-200' },
+{ text: 'API documentation', color: 'bg-orange-200' },
+{ text: 'Partnerships', color: 'bg-orange-200' },
+{ text: 'Conferences', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Developers', color: 'bg-blue-200' },
+{ text: 'Businesses', color: 'bg-blue-200' },
+{ text: 'Researchers', color: 'bg-blue-200' },
+{ text: 'Educators', color: 'bg-blue-200' },
+{ text: 'General users', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Cloud computing', color: 'bg-green-200' },
+{ text: 'Research', color: 'bg-green-200' },
+{ text: 'Talent', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'Subscription plans (ChatGPT Plus)', color: 'bg-yellow-200' },
+{ text: 'API usage fees', color: 'bg-yellow-200' },
+{ text: 'Enterprise contracts', color: 'bg-yellow-200' }
+]
+},
+netflix: {
+'key-partners': [
+{ text: 'Content creators', color: 'bg-blue-200' },
+{ text: 'ISPs', color: 'bg-blue-200' },
+{ text: 'Device manufacturers', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'Content production', color: 'bg-green-200' },
+{ text: 'Platform maintenance', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'Content library', color: 'bg-purple-200' },
+{ text: 'Streaming platform', color: 'bg-purple-200' },
+{ text: 'Recommendation algorithms', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'On-demand streaming', color: 'bg-yellow-200' },
+{ text: 'Original content', color: 'bg-yellow-200' },
+{ text: 'Personalized recommendations', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Self-service (app interface)', color: 'bg-pink-200' },
+{ text: 'Automated (recommendation algorithms)', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'Website', color: 'bg-orange-200' },
+{ text: 'Mobile apps', color: 'bg-orange-200' },
+{ text: 'Smart TVs', color: 'bg-orange-200' },
+{ text: 'Gaming consoles', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Streaming enthusiasts', color: 'bg-blue-200' },
+{ text: 'Families', color: 'bg-blue-200' },
+{ text: 'International viewers', color: 'bg-blue-200' },
+{ text: 'Cord-cutters', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Content licensing', color: 'bg-green-200' },
+{ text: 'Production', color: 'bg-green-200' },
+{ text: 'Server costs', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'Monthly subscriptions (tiered plans)', color: 'bg-yellow-200' }
+]
+},
+uber: {
+'key-partners': [
+{ text: 'Drivers', color: 'bg-blue-200' },
+{ text: 'Payment processors', color: 'bg-blue-200' },
+{ text: 'Map providers', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Driver recruitment', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'Driver network', color: 'bg-purple-200' },
+{ text: 'Mobile app', color: 'bg-purple-200' },
+{ text: 'Matching algorithm', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'Convenient transportation', color: 'bg-yellow-200' },
+{ text: 'Flexible earning opportunities', color: 'bg-yellow-200' },
+{ text: 'Transparent pricing', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Self-service app', color: 'bg-pink-200' },
+{ text: 'Automated support', color: 'bg-pink-200' },
+{ text: 'Ratings system', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'Mobile app', color: 'bg-orange-200' },
+{ text: 'Website', color: 'bg-orange-200' },
+{ text: 'Partner promotions', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Urban commuters', color: 'bg-blue-200' },
+{ text: 'Business travelers', color: 'bg-blue-200' },
+{ text: 'Nightlife participants', color: 'bg-blue-200' },
+{ text: 'Drivers seeking income', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Driver payments', color: 'bg-green-200' },
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' },
+{ text: 'Customer acquisition', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'Ride commissions', color: 'bg-yellow-200' },
+{ text: 'Surge pricing', color: 'bg-yellow-200' },
+{ text: 'Uber Eats delivery fees', color: 'bg-yellow-200' }
+]
+},
+airbnb: {
+'key-partners': [
+{ text: 'Property owners/hosts', color: 'bg-blue-200' },
+{ text: 'Payment processors', color: 'bg-blue-200' },
+{ text: 'Photographers', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Host recruitment', color: 'bg-green-200' },
+{ text: 'Trust & safety', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'Host network', color: 'bg-purple-200' },
+{ text: 'Platform', color: 'bg-purple-200' },
+{ text: 'Review system', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'Unique accommodations', color: 'bg-yellow-200' },
+{ text: 'Local experiences', color: 'bg-yellow-200' },
+{ text: 'Income for property owners', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Self-service platform', color: 'bg-pink-200' },
+{ text: 'Community reviews', color: 'bg-pink-200' },
+{ text: 'Host interactions', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'Website', color: 'bg-orange-200' },
+{ text: 'Mobile app', color: 'bg-orange-200' },
+{ text: 'Social media', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Travelers', color: 'bg-blue-200' },
+{ text: 'Property owners', color: 'bg-blue-200' },
+{ text: 'Business travelers', color: 'bg-blue-200' },
+{ text: 'Experience seekers', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' },
+{ text: 'Customer support', color: 'bg-green-200' },
+{ text: 'Insurance', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'Guest service fees', color: 'bg-yellow-200' },
+{ text: 'Host commissions', color: 'bg-yellow-200' },
+{ text: 'Experience bookings', color: 'bg-yellow-200' }
+]
+},
+spotify: {
+'key-partners': [
+{ text: 'Music labels', color: 'bg-blue-200' },
+{ text: 'Artists', color: 'bg-blue-200' },
+{ text: 'Podcast creators', color: 'bg-blue-200' }
+],
+'key-activities': [
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Content licensing', color: 'bg-green-200' },
+{ text: 'Playlist curation', color: 'bg-green-200' }
+],
+'key-resources': [
+{ text: 'Music library', color: 'bg-purple-200' },
+{ text: 'Recommendation algorithm', color: 'bg-purple-200' },
+{ text: 'Streaming platform', color: 'bg-purple-200' }
+],
+'value-propositions': [
+{ text: 'On-demand music streaming', color: 'bg-yellow-200' },
+{ text: 'Personalized recommendations', color: 'bg-yellow-200' },
+{ text: 'Offline listening', color: 'bg-yellow-200' }
+],
+'customer-relationships': [
+{ text: 'Self-service platform', color: 'bg-pink-200' },
+{ text: 'Personalized playlists', color: 'bg-pink-200' },
+{ text: 'Community features', color: 'bg-pink-200' }
+],
+'channels': [
+{ text: 'Mobile app', color: 'bg-orange-200' },
+{ text: 'Desktop app', color: 'bg-orange-200' },
+{ text: 'Web player', color: 'bg-orange-200' },
+{ text: 'Smart devices', color: 'bg-orange-200' }
+],
+'customer-segments': [
+{ text: 'Music listeners', color: 'bg-blue-200' },
+{ text: 'Artists', color: 'bg-blue-200' },
+{ text: 'Podcast creators', color: 'bg-blue-200' },
+{ text: 'Advertisers', color: 'bg-blue-200' }
+],
+'cost-structure': [
+{ text: 'Royalty payments', color: 'bg-green-200' },
+{ text: 'Platform development', color: 'bg-green-200' },
+{ text: 'Marketing', color: 'bg-green-200' },
+{ text: 'Content acquisition', color: 'bg-green-200' }
+],
+'revenue-streams': [
+{ text: 'Premium subscriptions', color: 'bg-yellow-200' },
+{ text: 'Ad-supported free tier', color: 'bg-yellow-200' },
+{ text: 'Brand partnerships', color: 'bg-yellow-200' }
+]
+}
+};
+const selectedTemplate = templates[template];
+if (!selectedTemplate) return;
+// Create notes for each section with proper grid layout
+Object.keys(selectedTemplate).forEach(sectionId => {
+const section = document.getElementById(sectionId);
+const gridContainer = section.querySelector('.grid-container');
+const notes = selectedTemplate[sectionId];
+notes.forEach((note, index) => {
+// Find available cell
+const availableCell = findAvailableCell(sectionId);
+if (availableCell) {
+const { row, col } = availableCell;
+const { left, top } = getPositionFromGridCell(row, col);
+const noteElement = createNote(note.text, note.color, left, top);
+noteElement.dataset.section = sectionId;
+noteElement.dataset.row = row;
+noteElement.dataset.col = col;
+gridContainer.appendChild(noteElement);
+setGridCellOccupancy(sectionId, row, col, true);
+}
+});
+});
+// Show success message
+const message = document.createElement('div');
+message.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-3 py-1 rounded-lg shadow-lg text-sm';
+message.textContent = `${template.charAt(0).toUpperCase() + template.slice(1)} template loaded successfully!`;
+document.body.appendChild(message);
+setTimeout(() => {
+message.remove();
+}, 3000);
+}
+// Initialize with first color selected
+colorOptions[0].click();
+// Initialize grids when page loads
+initializeGrids();
+// Handle window resize to recalculate grids
+window.addEventListener('resize', () => {
+// Save current notes data
+const notes = document.querySelectorAll('.sticky-note');
+const notesData = [];
+notes.forEach(note => {
+notesData.push({
+text: note.querySelector('p').textContent,
+color: Array.from(note.classList).find(cls => cls.startsWith('bg-')),
+section: note.dataset.section
+});
+note.remove();
+});
+// Reinitialize grids
+initializeGrids();
+// Restore notes
+notesData.forEach(noteData => {
+const sectionId = noteData.section;
+const availableCell = findAvailableCell(sectionId);
+if (availableCell) {
+const { row, col } = availableCell;
+const { left, top } = getPositionFromGridCell(row, col);
+const note = createNote(noteData.text, noteData.color, left, top);
+note.dataset.section = sectionId;
+note.dataset.row = row;
+note.dataset.col = col;
+document.querySelector(`#${sectionId} .grid-container`).appendChild(note);
+setGridCellOccupancy(sectionId, row, col, true);
+}
+});
+});
+});
+</script>
+</div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'940c14d7f6c221a3',t:'MTc0NzQxMTE1Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
