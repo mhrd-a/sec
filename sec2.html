@@ -1,0 +1,1228 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Model Canvas Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f4f8;
+            overflow-x: hidden;
+        }
+        
+        /* Prevent text selection on canvas */
+        #canvas-container, #canvas, .canvas-section {
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        /* Make canvas container relative for proper positioning */
+        #canvas-container {
+            position: relative;
+        }
+        
+        .canvas-section {
+            border: 1px solid #cbd5e0;
+            background-color: white;
+            transition: all 0.2s;
+        }
+        
+        .canvas-section:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .sticky-note {
+            cursor: move;
+            position: absolute;
+            width: 150px;
+            min-height: 100px;
+            padding: 10px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            word-wrap: break-word;
+            transition: transform 0.1s;
+            font-size: 0.7rem; /* Reduced text size to half */
+            line-height: 1.2;
+        }
+        
+        .sticky-note:hover {
+            transform: scale(1.02);
+        }
+        
+        .sticky-note .note-controls {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            display: none;
+        }
+        
+        .sticky-note:hover .note-controls {
+            display: flex;
+        }
+        
+        /* Allow text selection only inside editable content */
+        .note-content[contenteditable="true"] {
+            user-select: text;
+            -webkit-user-select: text;
+            -moz-user-select: text;
+            -ms-user-select: text;
+            cursor: text;
+        }
+        
+        .emoji-item {
+            position: absolute;
+            font-size: 24px;
+            cursor: move;
+            z-index: 10;
+        }
+        
+        .emoji-item .emoji-controls {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            display: none;
+        }
+        
+        .emoji-item:hover .emoji-controls {
+            display: block;
+        }
+        
+        .emoji-picker {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 5px;
+        }
+        
+        .tool-button {
+            transition: all 0.2s;
+        }
+        
+        .tool-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .section-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+        
+        .section-description {
+            font-size: 0.75rem;
+            color: #718096;
+        }
+        
+        .template-card {
+            transition: all 0.2s;
+        }
+        
+        .template-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen">
+        <!-- Left Sidebar - Toolbox -->
+        <div class="w-20 bg-gray-800 text-white p-4 flex flex-col items-center space-y-6">
+            <div class="text-center">
+                <div class="text-xs font-semibold mb-2">TOOLS</div>
+                <div class="h-0.5 w-10 bg-gray-600 mx-auto"></div>
+            </div>
+            
+            <!-- Sticky Note Tool -->
+            <div class="tool-button" id="sticky-note-tool">
+                <div class="flex flex-col items-center">
+                    <div class="bg-yellow-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-sticky-note text-yellow-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Notes</span>
+                </div>
+            </div>
+            
+            <!-- Emoji Tool -->
+            <div class="tool-button" id="emoji-tool">
+                <div class="flex flex-col items-center">
+                    <div class="bg-pink-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="far fa-smile text-pink-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Emojis</span>
+                </div>
+            </div>
+            
+            <!-- Undo Button -->
+            <div class="tool-button" id="undo-button">
+                <div class="flex flex-col items-center">
+                    <div class="bg-blue-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-undo text-blue-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Undo</span>
+                </div>
+            </div>
+            
+            <!-- Redo Button -->
+            <div class="tool-button" id="redo-button">
+                <div class="flex flex-col items-center">
+                    <div class="bg-blue-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-redo text-blue-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Redo</span>
+                </div>
+            </div>
+            
+            <!-- Templates Button -->
+            <div class="tool-button" id="templates-button">
+                <div class="flex flex-col items-center">
+                    <div class="bg-purple-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-file-alt text-purple-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Templates</span>
+                </div>
+            </div>
+            
+            <!-- Clear Canvas Button -->
+            <div class="tool-button" id="clear-button">
+                <div class="flex flex-col items-center">
+                    <div class="bg-red-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-trash-alt text-red-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Clear</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col">
+            <!-- Header -->
+            <div class="bg-white p-4 shadow-sm">
+                <h1 class="text-2xl font-bold text-gray-800">Business Model Canvas Builder</h1>
+                <h2 class="text-lg text-gray-600 mb-3">Strome Entrepreneurship Center</h2>
+                <div class="flex">
+                    <input type="text" id="project-name" placeholder="Enter your project name" class="border border-gray-300 rounded-md px-4 py-2 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            
+            <!-- Canvas Area -->
+            <div class="flex-1 p-4 overflow-auto" id="canvas-container">
+                <div class="grid grid-cols-10 grid-rows-3 gap-3 h-full" id="canvas">
+                    <!-- Key Partners -->
+                    <div class="canvas-section col-span-2 row-span-2 p-3" id="key-partners">
+                        <div class="section-title">KEY PARTNERS</div>
+                        <div class="section-description">Who are our key partners and suppliers? What resources are we acquiring from them?</div>
+                    </div>
+                    
+                    <!-- Key Activities -->
+                    <div class="canvas-section col-span-2 p-3" id="key-activities">
+                        <div class="section-title">KEY ACTIVITIES</div>
+                        <div class="section-description">What key activities do our value propositions require?</div>
+                    </div>
+                    
+                    <!-- Value Propositions -->
+                    <div class="canvas-section col-span-2 row-span-2 p-3" id="value-propositions">
+                        <div class="section-title">VALUE PROPOSITIONS</div>
+                        <div class="section-description">What value do we deliver to the customer? Which customer problems are we solving?</div>
+                    </div>
+                    
+                    <!-- Customer Relationships -->
+                    <div class="canvas-section col-span-2 p-3" id="customer-relationships">
+                        <div class="section-title">CUSTOMER RELATIONSHIPS</div>
+                        <div class="section-description">What type of relationship does each customer segment expect?</div>
+                    </div>
+                    
+                    <!-- Customer Segments -->
+                    <div class="canvas-section col-span-2 row-span-2 p-3" id="customer-segments">
+                        <div class="section-title">CUSTOMER SEGMENTS</div>
+                        <div class="section-description">For whom are we creating value? Who are our most important customers?</div>
+                    </div>
+                    
+                    <!-- Key Resources -->
+                    <div class="canvas-section col-span-2 p-3" id="key-resources">
+                        <div class="section-title">KEY RESOURCES</div>
+                        <div class="section-description">What key resources do our value propositions require?</div>
+                    </div>
+                    
+                    <!-- Channels -->
+                    <div class="canvas-section col-span-2 p-3" id="channels">
+                        <div class="section-title">CHANNELS</div>
+                        <div class="section-description">Through which channels do our customer segments want to be reached?</div>
+                    </div>
+                    
+                    <!-- Cost Structure -->
+                    <div class="canvas-section col-span-5 p-3" id="cost-structure">
+                        <div class="section-title">COST STRUCTURE</div>
+                        <div class="section-description">What are the most important costs inherent in our business model?</div>
+                    </div>
+                    
+                    <!-- Revenue Streams -->
+                    <div class="canvas-section col-span-5 p-3" id="revenue-streams">
+                        <div class="section-title">REVENUE STREAMS</div>
+                        <div class="section-description">For what value are our customers willing to pay? How would they prefer to pay?</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Emoji Picker Modal -->
+    <div id="emoji-picker-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-80">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">Select an Emoji</h3>
+                <button id="close-emoji-picker" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="emoji-picker p-2">
+                <!-- Common emojis -->
+                <button class="emoji-btn text-2xl">😀</button>
+                <button class="emoji-btn text-2xl">😊</button>
+                <button class="emoji-btn text-2xl">🎉</button>
+                <button class="emoji-btn text-2xl">👍</button>
+                <button class="emoji-btn text-2xl">❤️</button>
+                <button class="emoji-btn text-2xl">🚀</button>
+                <button class="emoji-btn text-2xl">💡</button>
+                <button class="emoji-btn text-2xl">⭐</button>
+                <button class="emoji-btn text-2xl">🔥</button>
+                <button class="emoji-btn text-2xl">💰</button>
+                <button class="emoji-btn text-2xl">📊</button>
+                <button class="emoji-btn text-2xl">📈</button>
+                <button class="emoji-btn text-2xl">🏆</button>
+                <button class="emoji-btn text-2xl">🎯</button>
+                <button class="emoji-btn text-2xl">🔍</button>
+                <button class="emoji-btn text-2xl">📱</button>
+                <button class="emoji-btn text-2xl">💻</button>
+                <button class="emoji-btn text-2xl">📝</button>
+                <button class="emoji-btn text-2xl">🔄</button>
+                <button class="emoji-btn text-2xl">🤝</button>
+                <button class="emoji-btn text-2xl">👥</button>
+                <button class="emoji-btn text-2xl">📢</button>
+                <button class="emoji-btn text-2xl">💬</button>
+                <button class="emoji-btn text-2xl">📞</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Templates Modal -->
+    <div id="templates-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-4/5 max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-xl">Sample Business Model Canvas Templates</h3>
+                <button id="close-templates" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <p class="text-gray-600 mb-6">Select a template to load a pre-filled Business Model Canvas. This will replace any existing content on your canvas.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Pokémon Go Template -->
+                <div class="template-card bg-gradient-to-br from-red-50 to-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">Pokémon Go</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Mobile AR gaming app that combines real-world exploration with Pokémon collecting.</p>
+                    <button class="load-template w-full py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors" data-template="pokemon">Load Template</button>
+                </div>
+                
+                <!-- OpenAI Template -->
+                <div class="template-card bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">OpenAI</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">AI research lab developing advanced language models and AI tools.</p>
+                    <button class="load-template w-full py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md transition-colors" data-template="openai">Load Template</button>
+                </div>
+                
+                <!-- Netflix Template -->
+                <div class="template-card bg-gradient-to-br from-red-50 to-red-100 border border-red-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-film"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">Netflix</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Subscription-based streaming service offering movies and TV shows.</p>
+                    <button class="load-template w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-md transition-colors" data-template="netflix">Load Template</button>
+                </div>
+                
+                <!-- Uber Template -->
+                <div class="template-card bg-gradient-to-br from-gray-50 to-black-100 border border-gray-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">Uber</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Ride-hailing platform connecting drivers with passengers.</p>
+                    <button class="load-template w-full py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-md transition-colors" data-template="uber">Load Template</button>
+                </div>
+                
+                <!-- Airbnb Template -->
+                <div class="template-card bg-gradient-to-br from-pink-50 to-red-50 border border-pink-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-home"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">Airbnb</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Online marketplace for lodging and vacation rentals.</p>
+                    <button class="load-template w-full py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-md transition-colors" data-template="airbnb">Load Template</button>
+                </div>
+                
+                <!-- Spotify Template -->
+                <div class="template-card bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-lg p-4 shadow-md">
+                    <div class="flex items-center mb-3">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white text-xl mr-3">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h4 class="font-bold text-lg">Spotify</h4>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">Music streaming platform with freemium and subscription models.</p>
+                    <button class="load-template w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-md transition-colors" data-template="spotify">Load Template</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Template Confirmation Modal -->
+    <div id="template-confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-80">
+            <h3 class="font-bold mb-4">Load Template</h3>
+            <p class="mb-6">Loading a template will replace all content on your canvas. Are you sure you want to continue?</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-template" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                <button id="confirm-template" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600">Load Template</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-80">
+            <h3 class="font-bold mb-4">Clear Canvas</h3>
+            <p class="mb-6">Are you sure you want to clear the entire canvas? This action cannot be undone.</p>
+            <div class="flex justify-end space-x-3">
+                <button id="cancel-clear" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                <button id="confirm-clear" class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize variables
+            let draggedElement = null;
+            let offsetX = 0;
+            let offsetY = 0;
+            let isDragging = false;
+            let nextNoteId = 1;
+            let nextEmojiId = 1;
+            let history = [];
+            let redoStack = [];
+            let selectedTemplate = null;
+            
+            // Get DOM elements
+            const canvasContainer = document.getElementById('canvas-container');
+            const canvas = document.getElementById('canvas');
+            const stickyNoteTool = document.getElementById('sticky-note-tool');
+            const emojiTool = document.getElementById('emoji-tool');
+            const undoButton = document.getElementById('undo-button');
+            const redoButton = document.getElementById('redo-button');
+            const templatesButton = document.getElementById('templates-button');
+            const clearButton = document.getElementById('clear-button');
+            const emojiPickerModal = document.getElementById('emoji-picker-modal');
+            const closeEmojiPicker = document.getElementById('close-emoji-picker');
+            const templatesModal = document.getElementById('templates-modal');
+            const closeTemplates = document.getElementById('close-templates');
+            const templateConfirmationModal = document.getElementById('template-confirmation-modal');
+            const cancelTemplate = document.getElementById('cancel-template');
+            const confirmTemplate = document.getElementById('confirm-template');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const cancelClear = document.getElementById('cancel-clear');
+            const confirmClear = document.getElementById('confirm-clear');
+            
+            // Note colors
+            const noteColors = [
+                { bg: 'bg-yellow-100', border: 'border-yellow-300' },
+                { bg: 'bg-blue-100', border: 'border-blue-300' },
+                { bg: 'bg-green-100', border: 'border-green-300' },
+                { bg: 'bg-pink-100', border: 'border-pink-300' },
+                { bg: 'bg-purple-100', border: 'border-purple-300' }
+            ];
+            
+            // Templates data - Updated to have individual items for each section
+            const templates = {
+                pokemon: {
+                    name: "Pokémon Go (Niantic)",
+                    notes: {
+                        "customer-segments": [
+                            "Mobile gamers", 
+                            "Pokémon fans", 
+                            "Families", 
+                            "Location-based AR enthusiasts"
+                        ],
+                        "value-propositions": [
+                            "Free-to-play AR gaming", 
+                            "Social interaction", 
+                            "Physical activity", 
+                            "Nostalgia-driven collecting"
+                        ],
+                        "channels": [
+                            "App stores (iOS, Android)", 
+                            "Social media", 
+                            "In-game events", 
+                            "Niantic website"
+                        ],
+                        "customer-relationships": [
+                            "Community-driven events", 
+                            "In-game notifications", 
+                            "Self-service tutorials", 
+                            "Forums & support"
+                        ],
+                        "revenue-streams": [
+                            "In-app purchases (PokéCoins)", 
+                            "Sponsored locations", 
+                            "Event tickets", 
+                            "Partner promotions"
+                        ],
+                        "key-resources": [
+                            "AR technology", 
+                            "Pokémon IP", 
+                            "Mobile app", 
+                            "Location data"
+                        ],
+                        "key-activities": [
+                            "Game development", 
+                            "Server maintenance", 
+                            "Event organization", 
+                            "Marketing"
+                        ],
+                        "key-partners": [
+                            "The Pokémon Company", 
+                            "Sponsors (McDonald's)", 
+                            "App stores", 
+                            "Mobile carriers"
+                        ],
+                        "cost-structure": [
+                            "Server costs", 
+                            "Development", 
+                            "Licensing fees", 
+                            "Marketing"
+                        ]
+                    }
+                },
+                openai: {
+                    name: "OpenAI",
+                    notes: {
+                        "customer-segments": [
+                            "Developers", 
+                            "Businesses", 
+                            "Researchers", 
+                            "General users"
+                        ],
+                        "value-propositions": [
+                            "Advanced AI models", 
+                            "API access", 
+                            "Research advancements", 
+                            "Creative tools"
+                        ],
+                        "channels": [
+                            "Website", 
+                            "API documentation", 
+                            "Partnerships", 
+                            "Conferences"
+                        ],
+                        "customer-relationships": [
+                            "Self-service API", 
+                            "Enterprise support", 
+                            "Community forums", 
+                            "Documentation"
+                        ],
+                        "revenue-streams": [
+                            "Subscription plans", 
+                            "API usage fees", 
+                            "Enterprise contracts", 
+                            "Research grants"
+                        ],
+                        "key-resources": [
+                            "AI models", 
+                            "Cloud infrastructure", 
+                            "Research team", 
+                            "Training data"
+                        ],
+                        "key-activities": [
+                            "AI research", 
+                            "Model training", 
+                            "API maintenance", 
+                            "Customer support"
+                        ],
+                        "key-partners": [
+                            "Microsoft", 
+                            "Research institutions", 
+                            "Enterprise clients", 
+                            "Cloud providers"
+                        ],
+                        "cost-structure": [
+                            "Cloud computing", 
+                            "Research", 
+                            "Talent", 
+                            "Marketing"
+                        ]
+                    }
+                },
+                netflix: {
+                    name: "Netflix",
+                    notes: {
+                        "customer-segments": [
+                            "Streaming enthusiasts", 
+                            "Families", 
+                            "International viewers", 
+                            "Cord-cutters"
+                        ],
+                        "value-propositions": [
+                            "On-demand streaming", 
+                            "Original content", 
+                            "Personalized recommendations", 
+                            "Ad-free experience"
+                        ],
+                        "channels": [
+                            "Website", 
+                            "Mobile apps", 
+                            "Smart TVs", 
+                            "Gaming consoles"
+                        ],
+                        "customer-relationships": [
+                            "Self-service interface", 
+                            "Recommendation algorithms", 
+                            "Customer support", 
+                            "Email communications"
+                        ],
+                        "revenue-streams": [
+                            "Monthly subscriptions", 
+                            "Tiered pricing plans", 
+                            "Licensing content", 
+                            "Merchandise"
+                        ],
+                        "key-resources": [
+                            "Content library", 
+                            "Streaming platform", 
+                            "Recommendation algorithms", 
+                            "Brand"
+                        ],
+                        "key-activities": [
+                            "Content production", 
+                            "Platform maintenance", 
+                            "Marketing", 
+                            "Data analysis"
+                        ],
+                        "key-partners": [
+                            "Content creators", 
+                            "ISPs", 
+                            "Device manufacturers", 
+                            "Production studios"
+                        ],
+                        "cost-structure": [
+                            "Content licensing", 
+                            "Original production", 
+                            "Server costs", 
+                            "Marketing"
+                        ]
+                    }
+                },
+                uber: {
+                    name: "Uber",
+                    notes: {
+                        "customer-segments": [
+                            "Riders", 
+                            "Drivers", 
+                            "Businesses", 
+                            "Delivery customers"
+                        ],
+                        "value-propositions": [
+                            "Convenient transportation", 
+                            "Flexible earning", 
+                            "Fast delivery", 
+                            "Transparent pricing"
+                        ],
+                        "channels": [
+                            "Mobile app", 
+                            "Website", 
+                            "Social media", 
+                            "Partner integrations"
+                        ],
+                        "customer-relationships": [
+                            "App ratings", 
+                            "Self-service FAQ", 
+                            "Support tickets", 
+                            "Driver incentives"
+                        ],
+                        "revenue-streams": [
+                            "Ride fares", 
+                            "Delivery fees", 
+                            "Driver commission", 
+                            "Uber Eats"
+                        ],
+                        "key-resources": [
+                            "App platform", 
+                            "Driver network", 
+                            "Mapping technology", 
+                            "User data"
+                        ],
+                        "key-activities": [
+                            "Platform development", 
+                            "Driver onboarding", 
+                            "Marketing", 
+                            "Regulatory compliance"
+                        ],
+                        "key-partners": [
+                            "Drivers", 
+                            "Restaurants", 
+                            "Mapping providers", 
+                            "Payment processors"
+                        ],
+                        "cost-structure": [
+                            "Technology development", 
+                            "Driver incentives", 
+                            "Marketing", 
+                            "Legal & regulatory"
+                        ]
+                    }
+                },
+                airbnb: {
+                    name: "Airbnb",
+                    notes: {
+                        "customer-segments": [
+                            "Travelers", 
+                            "Property owners", 
+                            "Experience hosts", 
+                            "Business travelers"
+                        ],
+                        "value-propositions": [
+                            "Unique accommodations", 
+                            "Local experiences", 
+                            "Income for hosts", 
+                            "Trusted platform"
+                        ],
+                        "channels": [
+                            "Website", 
+                            "Mobile app", 
+                            "Social media", 
+                            "Email marketing"
+                        ],
+                        "customer-relationships": [
+                            "Review system", 
+                            "Customer support", 
+                            "Host community", 
+                            "Personalized recommendations"
+                        ],
+                        "revenue-streams": [
+                            "Service fees", 
+                            "Experience bookings", 
+                            "Airbnb Plus premium", 
+                            "Host services"
+                        ],
+                        "key-resources": [
+                            "Platform technology", 
+                            "User base", 
+                            "Brand reputation", 
+                            "Review system"
+                        ],
+                        "key-activities": [
+                            "Platform development", 
+                            "Host acquisition", 
+                            "Trust & safety", 
+                            "Marketing"
+                        ],
+                        "key-partners": [
+                            "Property owners", 
+                            "Experience hosts", 
+                            "Photographers", 
+                            "Payment processors"
+                        ],
+                        "cost-structure": [
+                            "Platform development", 
+                            "Marketing", 
+                            "Customer support", 
+                            "Insurance"
+                        ]
+                    }
+                },
+                spotify: {
+                    name: "Spotify",
+                    notes: {
+                        "customer-segments": [
+                            "Music listeners", 
+                            "Artists", 
+                            "Advertisers", 
+                            "Podcast creators"
+                        ],
+                        "value-propositions": [
+                            "On-demand streaming", 
+                            "Personalized playlists", 
+                            "Artist promotion", 
+                            "Ad platform"
+                        ],
+                        "channels": [
+                            "Mobile app", 
+                            "Desktop app", 
+                            "Web player", 
+                            "Smart speakers"
+                        ],
+                        "customer-relationships": [
+                            "Personalized recommendations", 
+                            "Spotify for Artists", 
+                            "Self-service ad platform", 
+                            "Customer support"
+                        ],
+                        "revenue-streams": [
+                            "Premium subscriptions", 
+                            "Advertising revenue", 
+                            "Distribution partnerships", 
+                            "Merchandise"
+                        ],
+                        "key-resources": [
+                            "Music catalog", 
+                            "Recommendation algorithms", 
+                            "User data", 
+                            "Brand"
+                        ],
+                        "key-activities": [
+                            "Content licensing", 
+                            "Platform development", 
+                            "Algorithm improvement", 
+                            "Marketing"
+                        ],
+                        "key-partners": [
+                            "Record labels", 
+                            "Artists", 
+                            "Podcast creators", 
+                            "Device manufacturers"
+                        ],
+                        "cost-structure": [
+                            "Music licensing fees", 
+                            "Royalty payments", 
+                            "Platform development", 
+                            "Marketing"
+                        ]
+                    }
+                }
+            };
+            
+            // Save current state to history
+            function saveToHistory() {
+                const state = {
+                    notes: Array.from(document.querySelectorAll('.sticky-note')).map(note => {
+                        return {
+                            id: note.id,
+                            content: note.querySelector('.note-content').textContent,
+                            left: note.style.left,
+                            top: note.style.top,
+                            colorClass: note.classList.toString().match(/bg-[a-z]+-100/)[0],
+                            borderClass: note.classList.toString().match(/border-[a-z]+-300/)[0]
+                        };
+                    }),
+                    emojis: Array.from(document.querySelectorAll('.emoji-item')).map(emoji => {
+                        return {
+                            id: emoji.id,
+                            content: emoji.querySelector('.emoji-content').textContent,
+                            left: emoji.style.left,
+                            top: emoji.style.top
+                        };
+                    })
+                };
+                history.push(JSON.stringify(state));
+                redoStack = []; // Clear redo stack when a new action is performed
+                
+                // Limit history size
+                if (history.length > 30) {
+                    history.shift();
+                }
+                
+                // Update undo/redo button states
+                updateUndoRedoButtons();
+            }
+            
+            // Update undo/redo button states
+            function updateUndoRedoButtons() {
+                undoButton.classList.toggle('opacity-50', history.length <= 1);
+                redoButton.classList.toggle('opacity-50', redoStack.length === 0);
+            }
+            
+            // Create a new sticky note
+            function createStickyNote(left = '100px', top = '100px', content = '', colorIndex = null) {
+                const id = `note-${nextNoteId++}`;
+                const colorPair = colorIndex !== null ? noteColors[colorIndex] : noteColors[Math.floor(Math.random() * noteColors.length)];
+                
+                const note = document.createElement('div');
+                note.id = id;
+                note.className = `sticky-note ${colorPair.bg} ${colorPair.border} border rounded-md`;
+                note.style.left = left;
+                note.style.top = top;
+                
+                note.innerHTML = `
+                    <div class="note-controls flex space-x-1">
+                        <button class="edit-note bg-white bg-opacity-80 rounded-full w-5 h-5 flex items-center justify-center">
+                            <i class="fas fa-pencil-alt text-xs text-gray-600"></i>
+                        </button>
+                        <button class="delete-note bg-white bg-opacity-80 rounded-full w-5 h-5 flex items-center justify-center">
+                            <i class="fas fa-times text-xs text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="note-content" contenteditable="false">${content}</div>
+                `;
+                
+                canvasContainer.appendChild(note);
+                
+                // Add event listeners
+                note.addEventListener('mousedown', startDrag);
+                
+                const editButton = note.querySelector('.edit-note');
+                editButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const contentDiv = note.querySelector('.note-content');
+                    contentDiv.contentEditable = true;
+                    contentDiv.focus();
+                    
+                    // Save the original content for undo
+                    const originalContent = contentDiv.textContent;
+                    
+                    // Handle blur to save changes
+                    const saveChanges = () => {
+                        contentDiv.contentEditable = false;
+                        if (originalContent !== contentDiv.textContent) {
+                            saveToHistory();
+                        }
+                        contentDiv.removeEventListener('blur', saveChanges);
+                    };
+                    
+                    contentDiv.addEventListener('blur', saveChanges);
+                });
+                
+                const deleteButton = note.querySelector('.delete-note');
+                deleteButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    note.remove();
+                    saveToHistory();
+                });
+                
+                return note;
+            }
+            
+            // Create a new emoji
+            function createEmoji(emoji, left = '100px', top = '100px') {
+                const id = `emoji-${nextEmojiId++}`;
+                
+                const emojiElement = document.createElement('div');
+                emojiElement.id = id;
+                emojiElement.className = 'emoji-item';
+                emojiElement.style.left = left;
+                emojiElement.style.top = top;
+                
+                emojiElement.innerHTML = `
+                    <div class="emoji-controls">
+                        <button class="delete-emoji bg-white bg-opacity-80 rounded-full w-5 h-5 flex items-center justify-center shadow-sm">
+                            <i class="fas fa-times text-xs text-gray-600"></i>
+                        </button>
+                    </div>
+                    <div class="emoji-content text-2xl">${emoji}</div>
+                `;
+                
+                canvasContainer.appendChild(emojiElement);
+                
+                // Add event listeners
+                emojiElement.addEventListener('mousedown', startDrag);
+                
+                const deleteButton = emojiElement.querySelector('.delete-emoji');
+                deleteButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    emojiElement.remove();
+                    saveToHistory();
+                });
+                
+                return emojiElement;
+            }
+            
+            // Start dragging an element
+            function startDrag(e) {
+                // Don't start drag if clicking on controls or editable content
+                if (e.target.closest('.note-controls') || 
+                    e.target.closest('.emoji-controls') || 
+                    e.target.getAttribute('contenteditable') === 'true') {
+                    return;
+                }
+                
+                draggedElement = this;
+                isDragging = true;
+                
+                // Calculate offset relative to the canvas container
+                const canvasRect = canvasContainer.getBoundingClientRect();
+                const elementRect = draggedElement.getBoundingClientRect();
+                
+                // Calculate the offset from the mouse position to the element's top-left corner
+                offsetX = e.clientX - elementRect.left;
+                offsetY = e.clientY - elementRect.top;
+                
+                // Bring to front
+                draggedElement.style.zIndex = 100;
+                
+                // Add event listeners for drag and drop
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', stopDrag);
+                
+                e.preventDefault();
+            }
+            
+            // Drag the element
+            function drag(e) {
+                if (!isDragging) return;
+                
+                const canvasRect = canvasContainer.getBoundingClientRect();
+                
+                // Calculate new position based on mouse position and offset
+                let left = e.clientX - canvasRect.left - offsetX;
+                let top = e.clientY - canvasRect.top - offsetY;
+                
+                // Keep within canvas bounds
+                left = Math.max(0, Math.min(left, canvasRect.width - draggedElement.offsetWidth));
+                top = Math.max(0, Math.min(top, canvasRect.height - draggedElement.offsetHeight));
+                
+                draggedElement.style.left = `${left}px`;
+                draggedElement.style.top = `${top}px`;
+                
+                e.preventDefault(); // Prevent text selection during drag
+            }
+            
+            // Stop dragging
+            function stopDrag(e) {
+                if (isDragging) {
+                    draggedElement.style.zIndex = 10;
+                    saveToHistory();
+                }
+                
+                isDragging = false;
+                draggedElement = null;
+                
+                document.removeEventListener('mousemove', drag);
+                document.removeEventListener('mouseup', stopDrag);
+                
+                if (e) e.preventDefault();
+            }
+            
+            // Load a template with separate notes for each item
+            function loadTemplate(templateName) {
+                // Clear existing notes and emojis
+                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                
+                // Update project name
+                document.getElementById('project-name').value = templates[templateName].name;
+                
+                // Create notes for each section in a tile format
+                const templateData = templates[templateName].notes;
+                
+                // Process each section
+                for (const sectionId in templateData) {
+                    const section = document.getElementById(sectionId);
+                    const sectionRect = section.getBoundingClientRect();
+                    const canvasRect = canvasContainer.getBoundingClientRect();
+                    
+                    // Get items for this section (max 4)
+                    const items = templateData[sectionId].slice(0, 4);
+                    
+                    // Calculate grid positions
+                    const gridSize = Math.ceil(Math.sqrt(items.length));
+                    const cellWidth = 160; // Width of sticky note + margin
+                    const cellHeight = 110; // Height of sticky note + margin
+                    
+                    // Calculate starting position (centered in section)
+                    const startX = sectionRect.left - canvasRect.left + (sectionRect.width - (gridSize * cellWidth)) / 2 + 10;
+                    const startY = sectionRect.top - canvasRect.top + 40;
+                    
+                    // Create notes in a grid layout
+                    items.forEach((content, index) => {
+                        const row = Math.floor(index / gridSize);
+                        const col = index % gridSize;
+                        
+                        const left = `${startX + (col * cellWidth)}px`;
+                        const top = `${startY + (row * cellHeight)}px`;
+                        
+                        // Use consistent color for each section
+                        const colorIndex = Object.keys(templateData).indexOf(sectionId) % noteColors.length;
+                        createStickyNote(left, top, content, colorIndex);
+                    });
+                }
+                
+                saveToHistory();
+            }
+            
+            // Add event listeners for tools
+            stickyNoteTool.addEventListener('click', () => {
+                const canvasRect = canvasContainer.getBoundingClientRect();
+                const left = `${(canvasRect.width / 2) - 75}px`;
+                const top = `${(canvasRect.height / 2) - 50}px`;
+                
+                createStickyNote(left, top, 'Click pencil to edit');
+                saveToHistory();
+            });
+            
+            emojiTool.addEventListener('click', () => {
+                emojiPickerModal.classList.remove('hidden');
+            });
+            
+            templatesButton.addEventListener('click', () => {
+                templatesModal.classList.remove('hidden');
+            });
+            
+            closeEmojiPicker.addEventListener('click', () => {
+                emojiPickerModal.classList.add('hidden');
+            });
+            
+            closeTemplates.addEventListener('click', () => {
+                templatesModal.classList.add('hidden');
+            });
+            
+            // Add event listeners for emoji buttons
+            document.querySelectorAll('.emoji-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const canvasRect = canvasContainer.getBoundingClientRect();
+                    const left = `${(canvasRect.width / 2) - 12}px`;
+                    const top = `${(canvasRect.height / 2) - 12}px`;
+                    
+                    createEmoji(btn.textContent, left, top);
+                    emojiPickerModal.classList.add('hidden');
+                    saveToHistory();
+                });
+            });
+            
+            // Add event listeners for template buttons
+            document.querySelectorAll('.load-template').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    selectedTemplate = btn.getAttribute('data-template');
+                    templateConfirmationModal.classList.remove('hidden');
+                    templatesModal.classList.add('hidden');
+                });
+            });
+            
+            // Template confirmation
+            cancelTemplate.addEventListener('click', () => {
+                templateConfirmationModal.classList.add('hidden');
+                selectedTemplate = null;
+            });
+            
+            confirmTemplate.addEventListener('click', () => {
+                if (selectedTemplate) {
+                    loadTemplate(selectedTemplate);
+                    templateConfirmationModal.classList.add('hidden');
+                    selectedTemplate = null;
+                }
+            });
+            
+            // Undo functionality
+            undoButton.addEventListener('click', () => {
+                if (history.length <= 1) return;
+                
+                // Save current state to redo stack
+                redoStack.push(history.pop());
+                
+                // Restore previous state
+                const previousState = JSON.parse(history[history.length - 1]);
+                restoreState(previousState);
+                
+                updateUndoRedoButtons();
+            });
+            
+            // Redo functionality
+            redoButton.addEventListener('click', () => {
+                if (redoStack.length === 0) return;
+                
+                // Get state from redo stack
+                const state = JSON.parse(redoStack.pop());
+                
+                // Add current state to history
+                history.push(JSON.stringify(state));
+                
+                // Restore state
+                restoreState(state);
+                
+                updateUndoRedoButtons();
+            });
+            
+            // Clear canvas functionality
+            clearButton.addEventListener('click', () => {
+                confirmationModal.classList.remove('hidden');
+            });
+            
+            cancelClear.addEventListener('click', () => {
+                confirmationModal.classList.add('hidden');
+            });
+            
+            confirmClear.addEventListener('click', () => {
+                // Remove all notes and emojis
+                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                
+                saveToHistory();
+                confirmationModal.classList.add('hidden');
+            });
+            
+            // Restore state from history
+            function restoreState(state) {
+                // Remove all current notes and emojis
+                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                
+                // Restore notes
+                state.notes.forEach(noteData => {
+                    const colorIndex = noteColors.findIndex(color => color.bg === noteData.colorClass);
+                    const note = createStickyNote(noteData.left, noteData.top, noteData.content, colorIndex);
+                    note.id = noteData.id;
+                });
+                
+                // Restore emojis
+                state.emojis.forEach(emojiData => {
+                    const emoji = createEmoji(emojiData.content, emojiData.left, emojiData.top);
+                    emoji.id = emojiData.id;
+                });
+            }
+            
+            // Initialize history with empty state
+            saveToHistory();
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', (e) => {
+                if (e.target === emojiPickerModal) {
+                    emojiPickerModal.classList.add('hidden');
+                }
+                if (e.target === templatesModal) {
+                    templatesModal.classList.add('hidden');
+                }
+                if (e.target === templateConfirmationModal) {
+                    templateConfirmationModal.classList.add('hidden');
+                    selectedTemplate = null;
+                }
+                if (e.target === confirmationModal) {
+                    confirmationModal.classList.add('hidden');
+                }
+            });
+            
+            // Prevent default browser text selection behavior on canvas
+            canvasContainer.addEventListener('mousedown', function(e) {
+                if (e.target === canvasContainer || e.target === canvas || e.target.classList.contains('canvas-section')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94354a6716151e81',t:'MTc0Nzg0MzI2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
