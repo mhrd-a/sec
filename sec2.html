@@ -127,6 +127,72 @@
             transform: translateY(-3px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+        
+        /* Photo item styles */
+        .photo-item {
+            position: absolute;
+            cursor: move;
+            z-index: 10;
+            border: 2px solid transparent;
+            box-sizing: border-box;
+        }
+        
+        .photo-item:hover {
+            border: 2px solid #3b82f6;
+        }
+        
+        .photo-item .photo-controls {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            display: none;
+        }
+        
+        .photo-item:hover .photo-controls {
+            display: block;
+        }
+        
+        .photo-item .resize-handle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            z-index: 20;
+        }
+        
+        .photo-item .resize-handle.nw {
+            top: -5px;
+            left: -5px;
+            cursor: nwse-resize;
+        }
+        
+        .photo-item .resize-handle.ne {
+            top: -5px;
+            right: -5px;
+            cursor: nesw-resize;
+        }
+        
+        .photo-item .resize-handle.sw {
+            bottom: -5px;
+            left: -5px;
+            cursor: nesw-resize;
+        }
+        
+        .photo-item .resize-handle.se {
+            bottom: -5px;
+            right: -5px;
+            cursor: nwse-resize;
+        }
+        
+        /* Hide resize handles when not hovering */
+        .photo-item .resize-handle {
+            display: none;
+        }
+        
+        .photo-item:hover .resize-handle {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +222,17 @@
                     </div>
                     <span class="text-xs mt-1">Emojis</span>
                 </div>
+            </div>
+            
+            <!-- Photo Tool -->
+            <div class="tool-button" id="photo-tool">
+                <div class="flex flex-col items-center">
+                    <div class="bg-green-200 h-10 w-10 flex items-center justify-center rounded-md shadow-sm">
+                        <i class="fas fa-image text-green-600"></i>
+                    </div>
+                    <span class="text-xs mt-1">Photos</span>
+                </div>
+                <input type="file" id="photo-upload" accept="image/*" class="hidden">
             </div>
             
             <!-- Undo Button -->
@@ -204,7 +281,7 @@
             <!-- Header -->
             <div class="bg-white p-4 shadow-sm">
                 <h1 class="text-2xl font-bold text-gray-800">Business Model Canvas Builder</h1>
-                <h2 class="text-lg text-gray-600 mb-3">Strome Entrepreneurial Center</h2>
+                <h2 class="text-lg text-gray-600 mb-3">Strome Entrepreneurship Center</h2>
                 <div class="flex">
                     <input type="text" id="project-name" placeholder="Enter your project name" class="border border-gray-300 rounded-md px-4 py-2 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
@@ -429,8 +506,15 @@
             let offsetX = 0;
             let offsetY = 0;
             let isDragging = false;
+            let isResizing = false;
+            let resizeHandle = null;
+            let resizeStartX = 0;
+            let resizeStartY = 0;
+            let resizeStartWidth = 0;
+            let resizeStartHeight = 0;
             let nextNoteId = 1;
             let nextEmojiId = 1;
+            let nextPhotoId = 1;
             let history = [];
             let redoStack = [];
             let selectedTemplate = null;
@@ -440,6 +524,8 @@
             const canvas = document.getElementById('canvas');
             const stickyNoteTool = document.getElementById('sticky-note-tool');
             const emojiTool = document.getElementById('emoji-tool');
+            const photoTool = document.getElementById('photo-tool');
+            const photoUpload = document.getElementById('photo-upload');
             const undoButton = document.getElementById('undo-button');
             const redoButton = document.getElementById('redo-button');
             const templatesButton = document.getElementById('templates-button');
@@ -842,6 +928,16 @@
                             left: emoji.style.left,
                             top: emoji.style.top
                         };
+                    }),
+                    photos: Array.from(document.querySelectorAll('.photo-item')).map(photo => {
+                        return {
+                            id: photo.id,
+                            src: photo.querySelector('img').src,
+                            left: photo.style.left,
+                            top: photo.style.top,
+                            width: photo.style.width,
+                            height: photo.style.height
+                        };
                     })
                 };
                 history.push(JSON.stringify(state));
@@ -956,11 +1052,99 @@
                 return emojiElement;
             }
             
+            // Create a new photo element
+            function createPhoto(file, left = '100px', top = '100px', width = '200px', height = 'auto') {
+                const id = `photo-${nextPhotoId++}`;
+                
+                const photoElement = document.createElement('div');
+                photoElement.id = id;
+                photoElement.className = 'photo-item';
+                photoElement.style.left = left;
+                photoElement.style.top = top;
+                photoElement.style.width = width;
+                photoElement.style.height = height;
+                
+                // Create a reader to read the file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    photoElement.innerHTML = `
+                        <div class="photo-controls">
+                            <button class="delete-photo bg-white bg-opacity-80 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                                <i class="fas fa-times text-xs text-gray-600"></i>
+                            </button>
+                        </div>
+                        <img src="${e.target.result}" alt="Uploaded photo" style="width: 100%; height: 100%; object-fit: contain;">
+                        <div class="resize-handle nw"></div>
+                        <div class="resize-handle ne"></div>
+                        <div class="resize-handle sw"></div>
+                        <div class="resize-handle se"></div>
+                    `;
+                    
+                    // Add event listeners for the photo
+                    photoElement.addEventListener('mousedown', startDrag);
+                    
+                    const deleteButton = photoElement.querySelector('.delete-photo');
+                    deleteButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        photoElement.remove();
+                        saveToHistory();
+                    });
+                    
+                    // Add resize handle event listeners
+                    const resizeHandles = photoElement.querySelectorAll('.resize-handle');
+                    resizeHandles.forEach(handle => {
+                        handle.addEventListener('mousedown', startResize);
+                    });
+                    
+                    saveToHistory();
+                };
+                
+                // Read the file as a data URL
+                if (file instanceof File) {
+                    reader.readAsDataURL(file);
+                } else if (typeof file === 'string') {
+                    // If it's already a data URL
+                    photoElement.innerHTML = `
+                        <div class="photo-controls">
+                            <button class="delete-photo bg-white bg-opacity-80 rounded-full w-6 h-6 flex items-center justify-center shadow-sm">
+                                <i class="fas fa-times text-xs text-gray-600"></i>
+                            </button>
+                        </div>
+                        <img src="${file}" alt="Uploaded photo" style="width: 100%; height: 100%; object-fit: contain;">
+                        <div class="resize-handle nw"></div>
+                        <div class="resize-handle ne"></div>
+                        <div class="resize-handle sw"></div>
+                        <div class="resize-handle se"></div>
+                    `;
+                    
+                    // Add event listeners for the photo
+                    photoElement.addEventListener('mousedown', startDrag);
+                    
+                    const deleteButton = photoElement.querySelector('.delete-photo');
+                    deleteButton.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        photoElement.remove();
+                        saveToHistory();
+                    });
+                    
+                    // Add resize handle event listeners
+                    const resizeHandles = photoElement.querySelectorAll('.resize-handle');
+                    resizeHandles.forEach(handle => {
+                        handle.addEventListener('mousedown', startResize);
+                    });
+                }
+                
+                canvasContainer.appendChild(photoElement);
+                return photoElement;
+            }
+            
             // Start dragging an element
             function startDrag(e) {
-                // Don't start drag if clicking on controls or editable content
+                // Don't start drag if clicking on controls, editable content, or resize handles
                 if (e.target.closest('.note-controls') || 
                     e.target.closest('.emoji-controls') || 
+                    e.target.closest('.photo-controls') ||
+                    e.target.classList.contains('resize-handle') ||
                     e.target.getAttribute('contenteditable') === 'true') {
                     return;
                 }
@@ -984,6 +1168,81 @@
                 document.addEventListener('mouseup', stopDrag);
                 
                 e.preventDefault();
+            }
+            
+            // Start resizing a photo
+            function startResize(e) {
+                e.stopPropagation();
+                
+                resizeHandle = e.target;
+                isResizing = true;
+                draggedElement = resizeHandle.closest('.photo-item');
+                
+                // Get initial positions and dimensions
+                const rect = draggedElement.getBoundingClientRect();
+                resizeStartX = e.clientX;
+                resizeStartY = e.clientY;
+                resizeStartWidth = rect.width;
+                resizeStartHeight = rect.height;
+                
+                // Bring to front
+                draggedElement.style.zIndex = 100;
+                
+                // Add event listeners for resizing
+                document.addEventListener('mousemove', resize);
+                document.addEventListener('mouseup', stopResize);
+                
+                e.preventDefault();
+            }
+            
+            // Resize the photo
+            function resize(e) {
+                if (!isResizing) return;
+                
+                const deltaX = e.clientX - resizeStartX;
+                const deltaY = e.clientY - resizeStartY;
+                
+                // Determine which handle is being dragged and resize accordingly
+                if (resizeHandle.classList.contains('se')) {
+                    // Bottom-right handle
+                    draggedElement.style.width = `${resizeStartWidth + deltaX}px`;
+                    draggedElement.style.height = `${resizeStartHeight + deltaY}px`;
+                } else if (resizeHandle.classList.contains('sw')) {
+                    // Bottom-left handle
+                    draggedElement.style.width = `${resizeStartWidth - deltaX}px`;
+                    draggedElement.style.height = `${resizeStartHeight + deltaY}px`;
+                    draggedElement.style.left = `${parseInt(draggedElement.style.left) + deltaX}px`;
+                } else if (resizeHandle.classList.contains('ne')) {
+                    // Top-right handle
+                    draggedElement.style.width = `${resizeStartWidth + deltaX}px`;
+                    draggedElement.style.height = `${resizeStartHeight - deltaY}px`;
+                    draggedElement.style.top = `${parseInt(draggedElement.style.top) + deltaY}px`;
+                } else if (resizeHandle.classList.contains('nw')) {
+                    // Top-left handle
+                    draggedElement.style.width = `${resizeStartWidth - deltaX}px`;
+                    draggedElement.style.height = `${resizeStartHeight - deltaY}px`;
+                    draggedElement.style.left = `${parseInt(draggedElement.style.left) + deltaX}px`;
+                    draggedElement.style.top = `${parseInt(draggedElement.style.top) + deltaY}px`;
+                }
+                
+                e.preventDefault();
+            }
+            
+            // Stop resizing
+            function stopResize(e) {
+                if (isResizing) {
+                    draggedElement.style.zIndex = 10;
+                    saveToHistory();
+                }
+                
+                isResizing = false;
+                resizeHandle = null;
+                draggedElement = null;
+                
+                document.removeEventListener('mousemove', resize);
+                document.removeEventListener('mouseup', stopResize);
+                
+                if (e) e.preventDefault();
             }
             
             // Drag the element
@@ -1025,7 +1284,7 @@
             // Load a template with separate notes for each item
             function loadTemplate(templateName) {
                 // Clear existing notes and emojis
-                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                document.querySelectorAll('.sticky-note, .emoji-item, .photo-item').forEach(el => el.remove());
                 
                 // Update project name
                 document.getElementById('project-name').value = templates[templateName].name;
@@ -1080,6 +1339,22 @@
             
             emojiTool.addEventListener('click', () => {
                 emojiPickerModal.classList.remove('hidden');
+            });
+            
+            photoTool.addEventListener('click', () => {
+                photoUpload.click();
+            });
+            
+            photoUpload.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    const canvasRect = canvasContainer.getBoundingClientRect();
+                    const left = `${(canvasRect.width / 2) - 100}px`;
+                    const top = `${(canvasRect.height / 2) - 100}px`;
+                    
+                    createPhoto(e.target.files[0], left, top);
+                    // Reset the input so the same file can be selected again
+                    e.target.value = '';
+                }
             });
             
             templatesButton.addEventListener('click', () => {
@@ -1170,8 +1445,8 @@
             });
             
             confirmClear.addEventListener('click', () => {
-                // Remove all notes and emojis
-                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                // Remove all notes, emojis, and photos
+                document.querySelectorAll('.sticky-note, .emoji-item, .photo-item').forEach(el => el.remove());
                 
                 saveToHistory();
                 confirmationModal.classList.add('hidden');
@@ -1179,8 +1454,8 @@
             
             // Restore state from history
             function restoreState(state) {
-                // Remove all current notes and emojis
-                document.querySelectorAll('.sticky-note, .emoji-item').forEach(el => el.remove());
+                // Remove all current notes, emojis, and photos
+                document.querySelectorAll('.sticky-note, .emoji-item, .photo-item').forEach(el => el.remove());
                 
                 // Restore notes
                 state.notes.forEach(noteData => {
@@ -1194,6 +1469,14 @@
                     const emoji = createEmoji(emojiData.content, emojiData.left, emojiData.top);
                     emoji.id = emojiData.id;
                 });
+                
+                // Restore photos
+                if (state.photos) {
+                    state.photos.forEach(photoData => {
+                        const photo = createPhoto(photoData.src, photoData.left, photoData.top, photoData.width, photoData.height);
+                        photo.id = photoData.id;
+                    });
+                }
             }
             
             // Initialize history with empty state
@@ -1224,5 +1507,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94358d5ed79c1729',t:'MTc0Nzg0NjAxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9435a3b191c88197',t:'MTc0Nzg0NjkyNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
