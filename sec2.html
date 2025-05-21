@@ -41,14 +41,14 @@
         .sticky-note {
             cursor: move;
             position: absolute;
-            width: 150px;
-            min-height: 100px;
-            padding: 10px;
+            width: 120px; /* Reduced to 80% of original 150px */
+            min-height: 70px; /* Reduced to 70% of original 100px */
+            padding: 8px;
             box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
             z-index: 10;
             word-wrap: break-word;
             transition: transform 0.1s;
-            font-size: 0.7rem; /* Reduced text size to half */
+            font-size: 0.65rem; /* Slightly smaller text */
             line-height: 1.2;
         }
         
@@ -204,7 +204,7 @@
             <!-- Header -->
             <div class="bg-white p-4 shadow-sm">
                 <h1 class="text-2xl font-bold text-gray-800">Business Model Canvas Builder</h1>
-                <h2 class="text-lg text-gray-600 mb-3">Strome Entrepreneurship Center</h2>
+                <h2 class="text-lg text-gray-600 mb-3">Strome Entrepreneurial Center</h2>
                 <div class="flex">
                     <input type="text" id="project-name" placeholder="Enter your project name" class="border border-gray-300 rounded-md px-4 py-2 w-full max-w-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
@@ -1044,8 +1044,8 @@
                     
                     // Calculate grid positions
                     const gridSize = Math.ceil(Math.sqrt(items.length));
-                    const cellWidth = 160; // Width of sticky note + margin
-                    const cellHeight = 110; // Height of sticky note + margin
+                    const cellWidth = 130; // Width of sticky note + margin (reduced)
+                    const cellHeight = 80; // Height of sticky note + margin (reduced)
                     
                     // Calculate starting position (centered in section)
                     const startX = sectionRect.left - canvasRect.left + (sectionRect.width - (gridSize * cellWidth)) / 2 + 10;
@@ -1071,8 +1071,8 @@
             // Add event listeners for tools
             stickyNoteTool.addEventListener('click', () => {
                 const canvasRect = canvasContainer.getBoundingClientRect();
-                const left = `${(canvasRect.width / 2) - 75}px`;
-                const top = `${(canvasRect.height / 2) - 50}px`;
+                const left = `${(canvasRect.width / 2) - 60}px`; // Adjusted for smaller width
+                const top = `${(canvasRect.height / 2) - 35}px`; // Adjusted for smaller height
                 
                 createStickyNote(left, top, 'Click pencil to edit');
                 saveToHistory();
@@ -1224,5 +1224,5 @@
             });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94354a6716151e81',t:'MTc0Nzg0MzI2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'94358d5ed79c1729',t:'MTc0Nzg0NjAxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
