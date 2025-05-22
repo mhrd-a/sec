@@ -56,13 +56,14 @@
         
         .note {
             cursor: move;
-            padding: 10px;
+            padding: 8px;
             margin-bottom: 8px;
             border-radius: 6px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             position: relative;
             overflow: hidden;
             word-wrap: break-word;
+            font-size: 0.85rem;
         }
         
         .note:hover .note-actions {
@@ -370,6 +371,28 @@
             display: flex;
             height: calc(100vh - 100px);
         }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        
+        .header-content {
+            flex-grow: 1;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            padding-right: 20px;
+        }
+        
+        .logo-container img {
+            max-height: 60px;
+            width: auto;
+        }
     </style>
 </head>
 <body class="no-select">
@@ -377,11 +400,18 @@
         <!-- Header -->
         <header class="bg-white shadow-sm py-4">
             <div class="container mx-auto px-4">
-                <h1 class="text-2xl font-bold text-gray-800">Business Model Canvas Builder</h1>
-                <h2 class="text-lg text-gray-600">Strome Entrepreneurial Center</h2>
-                <div class="mt-3">
-                    <input type="text" id="project-name" placeholder="Enter your project name" 
-                           class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="header-container">
+                    <div class="header-content">
+                        <h1 class="text-2xl font-bold text-gray-800">Business Model Canvas Builder</h1>
+                        <h2 class="text-lg text-gray-600">Strome Entrepreneurial Center</h2>
+                        <div class="mt-3">
+                            <input type="text" id="project-name" placeholder="Enter your project name" 
+                                class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+                    <div class="logo-container">
+                        <img src="https://www.odu.edu/sites/default/files/logos/univ/png-72dpi/odu-sig-noidea-fullcolor.png" alt="ODU Logo">
+                    </div>
                 </div>
             </div>
         </header>
@@ -1605,5 +1635,5 @@
             window.addEventListener('resize', adjustCanvasHeight);
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'943cda52079ac9b9',t:'MTc0NzkyMjU2Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'943d05fbd365818c',t:'MTc0NzkyNDM1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
