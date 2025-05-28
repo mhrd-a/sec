@@ -14,7 +14,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f0f4f8;
-            overflow: hidden;
+            overflow-y: auto;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -280,7 +280,8 @@
         }
         
         #canvas-container {
-            height: calc(100vh - 100px);
+            min-height: calc(100vh - 200px);
+            height: auto;
         }
         
         .notification {
@@ -369,7 +370,7 @@
         
         .main-container {
             display: flex;
-            height: calc(100vh - 200px);
+            height: calc(100vh - 100px);
         }
         
         .header-container {
