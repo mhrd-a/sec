@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Model Canvas Generator</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
@@ -67,6 +68,70 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--multiple {
+            border-color: #e5e7eb;
+            border-radius: 0.5rem;
+            min-height: 42px;
+            padding: 2px 8px;
+        }
+        
+        .select2-container--default.select2-container--focus .select2-selection--multiple {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #dbeafe;
+            border: 1px solid #bfdbfe;
+            border-radius: 0.375rem;
+            padding: 2px 8px;
+            margin: 3px;
+        }
+        
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: #3b82f6;
+            margin-right: 5px;
+        }
+        
+        .select2-dropdown {
+            border-color: #e5e7eb;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #3b82f6;
+        }
+        
+        .other-input {
+            display: none;
+            margin-top: 8px;
+        }
+        
+        /* PDF Export Styles */
+        @media print {
+            body {
+                background-color: white;
+                margin: 0;
+                padding: 0;
+            }
+            
+            .canvas-box {
+                break-inside: avoid;
+            }
+            
+            header, footer, button, .no-print {
+                display: none !important;
+            }
+            
+            #canvas-container {
+                width: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -89,7 +154,7 @@
                             <div class="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-2">1</div>
                             <h3 class="font-medium text-lg">Complete the Questionnaire</h3>
                         </div>
-                        <p class="text-gray-600">Answer questions about your business idea covering all nine components of the Business Model Canvas.</p>
+                        <p class="text-gray-600">Select from dropdown options or add custom entries for each component of the Business Model Canvas.</p>
                     </div>
                     <div class="flex-1 bg-blue-50 p-4 rounded-lg">
                         <div class="flex items-center mb-2">
@@ -170,6 +235,9 @@
                                 <option value="Manufacturing">Manufacturing</option>
                                 <option value="Other">Other</option>
                             </select>
+                            <div id="industry-other" class="other-input">
+                                <input type="text" id="industry-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify industry">
+                            </div>
                         </div>
                     </div>
                     
@@ -179,20 +247,75 @@
                         
                         <div class="mb-6">
                             <label for="customer-segments" class="block text-gray-700 font-medium mb-2">Customer Segments</label>
-                            <p class="text-sm text-gray-500 mb-2">Who are the most important customers for your business? Describe their demographics, needs, and behaviors.</p>
-                            <textarea id="customer-segments" name="customer-segments" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">Who are the most important customers for your business? Select all that apply or add your own.</p>
+                            <select id="customer-segments" name="customer-segments[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Young Adults (18-25)">Young Adults (18-25)</option>
+                                <option value="Adults (26-40)">Adults (26-40)</option>
+                                <option value="Middle-aged (41-60)">Middle-aged (41-60)</option>
+                                <option value="Seniors (60+)">Seniors (60+)</option>
+                                <option value="Parents">Parents</option>
+                                <option value="Students">Students</option>
+                                <option value="Professionals">Professionals</option>
+                                <option value="Small Businesses">Small Businesses</option>
+                                <option value="Enterprises">Enterprises</option>
+                                <option value="Government">Government</option>
+                                <option value="Non-profits">Non-profits</option>
+                                <option value="High-income Individuals">High-income Individuals</option>
+                                <option value="Budget-conscious Consumers">Budget-conscious Consumers</option>
+                                <option value="Tech Enthusiasts">Tech Enthusiasts</option>
+                                <option value="Health-conscious Individuals">Health-conscious Individuals</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="customer-segments-other" class="other-input mt-3">
+                                <textarea id="customer-segments-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other customer segments"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="customer-relationships" class="block text-gray-700 font-medium mb-2">Customer Relationships</label>
                             <p class="text-sm text-gray-500 mb-2">How will you establish and maintain relationships with each customer segment?</p>
-                            <textarea id="customer-relationships" name="customer-relationships" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <select id="customer-relationships" name="customer-relationships[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Self-service">Self-service</option>
+                                <option value="Automated Services">Automated Services</option>
+                                <option value="Personal Assistance">Personal Assistance</option>
+                                <option value="Dedicated Personal Assistance">Dedicated Personal Assistance</option>
+                                <option value="Communities">Communities</option>
+                                <option value="Co-creation">Co-creation</option>
+                                <option value="Subscription Services">Subscription Services</option>
+                                <option value="Loyalty Programs">Loyalty Programs</option>
+                                <option value="24/7 Support">24/7 Support</option>
+                                <option value="Social Media Engagement">Social Media Engagement</option>
+                                <option value="Email Marketing">Email Marketing</option>
+                                <option value="Content Marketing">Content Marketing</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="customer-relationships-other" class="other-input mt-3">
+                                <textarea id="customer-relationships-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other customer relationships"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="channels" class="block text-gray-700 font-medium mb-2">Channels</label>
-                            <p class="text-sm text-gray-500 mb-2">How will you reach and deliver value to your customers? (e.g., website, app, physical store)</p>
-                            <textarea id="channels" name="channels" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">How will you reach and deliver value to your customers?</p>
+                            <select id="channels" name="channels[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Website">Website</option>
+                                <option value="Mobile App">Mobile App</option>
+                                <option value="Physical Store">Physical Store</option>
+                                <option value="Social Media">Social Media</option>
+                                <option value="Email">Email</option>
+                                <option value="Direct Sales">Direct Sales</option>
+                                <option value="Partner Stores">Partner Stores</option>
+                                <option value="Wholesalers">Wholesalers</option>
+                                <option value="Distributors">Distributors</option>
+                                <option value="E-commerce Platforms">E-commerce Platforms</option>
+                                <option value="Events & Trade Shows">Events & Trade Shows</option>
+                                <option value="Phone/Call Center">Phone/Call Center</option>
+                                <option value="Affiliate Marketing">Affiliate Marketing</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="channels-other" class="other-input mt-3">
+                                <textarea id="channels-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other channels"></textarea>
+                            </div>
                         </div>
                     </div>
                     
@@ -202,14 +325,49 @@
                         
                         <div class="mb-6">
                             <label for="value-propositions" class="block text-gray-700 font-medium mb-2">Value Propositions</label>
-                            <p class="text-sm text-gray-500 mb-2">What value do you deliver to customers? What problems are you solving? What needs are you satisfying?</p>
-                            <textarea id="value-propositions" name="value-propositions" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">What value do you deliver to customers? What problems are you solving?</p>
+                            <select id="value-propositions" name="value-propositions[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Newness">Newness (Innovative Product/Service)</option>
+                                <option value="Performance">Performance Improvement</option>
+                                <option value="Customization">Customization</option>
+                                <option value="Design">Superior Design</option>
+                                <option value="Brand/Status">Brand/Status</option>
+                                <option value="Price">Lower Price</option>
+                                <option value="Cost Reduction">Cost Reduction for Customers</option>
+                                <option value="Risk Reduction">Risk Reduction</option>
+                                <option value="Accessibility">Accessibility</option>
+                                <option value="Convenience">Convenience/Usability</option>
+                                <option value="Time Saving">Time Saving</option>
+                                <option value="Sustainability">Sustainability</option>
+                                <option value="Social Impact">Social Impact</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="value-propositions-other" class="other-input mt-3">
+                                <textarea id="value-propositions-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other value propositions"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="unique-selling-point" class="block text-gray-700 font-medium mb-2">Unique Selling Point</label>
                             <p class="text-sm text-gray-500 mb-2">What makes your offering different from competitors?</p>
-                            <textarea id="unique-selling-point" name="unique-selling-point" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <select id="unique-selling-point" name="unique-selling-point[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Proprietary Technology">Proprietary Technology</option>
+                                <option value="Patents">Patents</option>
+                                <option value="Exclusive Features">Exclusive Features</option>
+                                <option value="Superior Quality">Superior Quality</option>
+                                <option value="Best Price">Best Price</option>
+                                <option value="Customer Service">Exceptional Customer Service</option>
+                                <option value="Speed">Speed/Efficiency</option>
+                                <option value="Expertise">Industry Expertise</option>
+                                <option value="Location">Strategic Location</option>
+                                <option value="Personalization">Personalization</option>
+                                <option value="Ecosystem">Complete Ecosystem/Solution</option>
+                                <option value="First Mover">First Mover Advantage</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="unique-selling-point-other" class="other-input mt-3">
+                                <textarea id="unique-selling-point-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other unique selling points"></textarea>
+                            </div>
                         </div>
                     </div>
                     
@@ -219,20 +377,69 @@
                         
                         <div class="mb-6">
                             <label for="key-resources" class="block text-gray-700 font-medium mb-2">Key Resources</label>
-                            <p class="text-sm text-gray-500 mb-2">What key assets are required to make your business model work? (e.g., physical, intellectual, human, financial)</p>
-                            <textarea id="key-resources" name="key-resources" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">What key assets are required to make your business model work?</p>
+                            <select id="key-resources" name="key-resources[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Physical Assets">Physical Assets (buildings, vehicles, machines)</option>
+                                <option value="Intellectual Property">Intellectual Property (patents, copyrights, data)</option>
+                                <option value="Human Resources">Human Resources (talent, expertise)</option>
+                                <option value="Financial Resources">Financial Resources (cash, credit lines)</option>
+                                <option value="Technology">Technology (software, platforms)</option>
+                                <option value="Manufacturing Facilities">Manufacturing Facilities</option>
+                                <option value="Distribution Network">Distribution Network</option>
+                                <option value="Customer Base">Customer Base</option>
+                                <option value="Brand">Brand</option>
+                                <option value="Partnerships">Strategic Partnerships</option>
+                                <option value="Natural Resources">Natural Resources</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="key-resources-other" class="other-input mt-3">
+                                <textarea id="key-resources-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other key resources"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="key-activities" class="block text-gray-700 font-medium mb-2">Key Activities</label>
-                            <p class="text-sm text-gray-500 mb-2">What key activities does your value proposition require? (e.g., production, problem-solving, platform)</p>
-                            <textarea id="key-activities" name="key-activities" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">What key activities does your value proposition require?</p>
+                            <select id="key-activities" name="key-activities[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Production">Production</option>
+                                <option value="Problem Solving">Problem Solving</option>
+                                <option value="Platform/Network">Platform/Network Management</option>
+                                <option value="Supply Chain Management">Supply Chain Management</option>
+                                <option value="Research & Development">Research & Development</option>
+                                <option value="Marketing & Sales">Marketing & Sales</option>
+                                <option value="Customer Support">Customer Support</option>
+                                <option value="Content Creation">Content Creation</option>
+                                <option value="Software Development">Software Development</option>
+                                <option value="Consulting">Consulting</option>
+                                <option value="Training">Training</option>
+                                <option value="Distribution">Distribution</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="key-activities-other" class="other-input mt-3">
+                                <textarea id="key-activities-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other key activities"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="key-partners" class="block text-gray-700 font-medium mb-2">Key Partners</label>
-                            <p class="text-sm text-gray-500 mb-2">Who are your key partners and suppliers? What resources are you acquiring from them?</p>
-                            <textarea id="key-partners" name="key-partners" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">Who are your key partners and suppliers?</p>
+                            <select id="key-partners" name="key-partners[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Suppliers">Suppliers</option>
+                                <option value="Strategic Alliances">Strategic Alliances (non-competitors)</option>
+                                <option value="Coopetition">Coopetition (strategic partnerships with competitors)</option>
+                                <option value="Joint Ventures">Joint Ventures</option>
+                                <option value="Distributors">Distributors</option>
+                                <option value="Retailers">Retailers</option>
+                                <option value="Technology Partners">Technology Partners</option>
+                                <option value="Outsourcing Partners">Outsourcing Partners</option>
+                                <option value="Investors">Investors</option>
+                                <option value="Government">Government</option>
+                                <option value="Universities/Research Institutions">Universities/Research Institutions</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="key-partners-other" class="other-input mt-3">
+                                <textarea id="key-partners-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other key partners"></textarea>
+                            </div>
                         </div>
                     </div>
                     
@@ -242,14 +449,47 @@
                         
                         <div class="mb-6">
                             <label for="revenue-streams" class="block text-gray-700 font-medium mb-2">Revenue Streams</label>
-                            <p class="text-sm text-gray-500 mb-2">How will your business generate revenue? What are your pricing strategies?</p>
-                            <textarea id="revenue-streams" name="revenue-streams" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">How will your business generate revenue?</p>
+                            <select id="revenue-streams" name="revenue-streams[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Asset Sale">Asset Sale</option>
+                                <option value="Usage Fee">Usage Fee</option>
+                                <option value="Subscription Fees">Subscription Fees</option>
+                                <option value="Lending/Renting/Leasing">Lending/Renting/Leasing</option>
+                                <option value="Licensing">Licensing</option>
+                                <option value="Brokerage Fees">Brokerage Fees</option>
+                                <option value="Advertising">Advertising</option>
+                                <option value="Freemium">Freemium</option>
+                                <option value="Commission">Commission</option>
+                                <option value="Transaction Fees">Transaction Fees</option>
+                                <option value="Data Sales">Data Sales</option>
+                                <option value="Franchise">Franchise</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="revenue-streams-other" class="other-input mt-3">
+                                <textarea id="revenue-streams-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other revenue streams"></textarea>
+                            </div>
                         </div>
                         
                         <div class="mb-6">
                             <label for="cost-structure" class="block text-gray-700 font-medium mb-2">Cost Structure</label>
-                            <p class="text-sm text-gray-500 mb-2">What are the most important costs in your business model? Which key resources/activities are most expensive?</p>
-                            <textarea id="cost-structure" name="cost-structure" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" required></textarea>
+                            <p class="text-sm text-gray-500 mb-2">What are the most important costs in your business model?</p>
+                            <select id="cost-structure" name="cost-structure[]" class="select2-multi w-full" multiple="multiple" required>
+                                <option value="Fixed Costs">Fixed Costs (salaries, rent, utilities)</option>
+                                <option value="Variable Costs">Variable Costs (materials, commissions)</option>
+                                <option value="Economies of Scale">Economies of Scale</option>
+                                <option value="Economies of Scope">Economies of Scope</option>
+                                <option value="R&D">Research & Development</option>
+                                <option value="Manufacturing">Manufacturing</option>
+                                <option value="Marketing & Sales">Marketing & Sales</option>
+                                <option value="Customer Service">Customer Service</option>
+                                <option value="Technology Infrastructure">Technology Infrastructure</option>
+                                <option value="Logistics & Distribution">Logistics & Distribution</option>
+                                <option value="Human Resources">Human Resources</option>
+                                <option value="Other">Other (specify below)</option>
+                            </select>
+                            <div id="cost-structure-other" class="other-input mt-3">
+                                <textarea id="cost-structure-other-input" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none" placeholder="Please specify other cost structure elements"></textarea>
+                            </div>
                         </div>
                     </div>
                     
@@ -271,7 +511,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
                             </svg>
-                            Download
+                            Download PDF
                         </button>
                         <button id="restart-btn" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-1" viewBox="0 0 20 20" fill="currentColor">
@@ -282,69 +522,72 @@
                     </div>
                 </div>
                 
-                <div id="business-name-display" class="text-center mb-6">
-                    <h3 id="canvas-business-name" class="text-2xl font-bold text-blue-800"></h3>
-                    <p id="canvas-industry" class="text-gray-600"></p>
-                </div>
-                
-                <!-- Business Model Canvas Grid -->
-                <div id="canvas-container" class="grid canvas-grid grid-cols-5 gap-3 mb-6">
-                    <!-- Row 1 -->
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
-                        <h4 class="font-semibold text-blue-800 mb-2">Key Partners</h4>
-                        <div id="canvas-key-partners" class="text-sm"></div>
+                <!-- Canvas for PDF Export -->
+                <div id="canvas-for-pdf">
+                    <div id="business-name-display" class="text-center mb-6">
+                        <h3 id="canvas-business-name" class="text-2xl font-bold text-blue-800"></h3>
+                        <p id="canvas-industry" class="text-gray-600"></p>
                     </div>
                     
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Key Activities</h4>
-                        <div id="canvas-key-activities" class="text-sm"></div>
-                    </div>
-                    
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
-                        <h4 class="font-semibold text-blue-800 mb-2">Value Propositions</h4>
-                        <div id="canvas-value-propositions" class="text-sm"></div>
-                        <div class="mt-3 pt-3 border-t border-blue-200">
-                            <h5 class="font-medium text-blue-700 mb-1">Unique Selling Point</h5>
-                            <div id="canvas-unique-selling-point" class="text-sm"></div>
+                    <!-- Business Model Canvas Grid -->
+                    <div id="canvas-container" class="grid grid-cols-5 gap-3 mb-6">
+                        <!-- Row 1 -->
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
+                            <h4 class="font-semibold text-blue-800 mb-2">Key Partners</h4>
+                            <div id="canvas-key-partners" class="text-sm"></div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Key Activities</h4>
+                            <div id="canvas-key-activities" class="text-sm"></div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
+                            <h4 class="font-semibold text-blue-800 mb-2">Value Propositions</h4>
+                            <div id="canvas-value-propositions" class="text-sm"></div>
+                            <div class="mt-3 pt-3 border-t border-blue-200">
+                                <h5 class="font-medium text-blue-700 mb-1">Unique Selling Point</h5>
+                                <div id="canvas-unique-selling-point" class="text-sm"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Customer Relationships</h4>
+                            <div id="canvas-customer-relationships" class="text-sm"></div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
+                            <h4 class="font-semibold text-blue-800 mb-2">Customer Segments</h4>
+                            <div id="canvas-customer-segments" class="text-sm"></div>
+                        </div>
+                        
+                        <!-- Row 2 -->
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Key Resources</h4>
+                            <div id="canvas-key-resources" class="text-sm"></div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Channels</h4>
+                            <div id="canvas-channels" class="text-sm"></div>
+                        </div>
+                        
+                        <!-- Row 3 - FIXED: Equal width for Cost Structure and Revenue Streams -->
+                        <div class="canvas-box bg-blue-50 p-4 col-span-2 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Cost Structure</h4>
+                            <div id="canvas-cost-structure" class="text-sm"></div>
+                        </div>
+                        
+                        <div class="canvas-box bg-blue-50 p-4 col-span-3 row-span-1">
+                            <h4 class="font-semibold text-blue-800 mb-2">Revenue Streams</h4>
+                            <div id="canvas-revenue-streams" class="text-sm"></div>
                         </div>
                     </div>
                     
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Customer Relationships</h4>
-                        <div id="canvas-customer-relationships" class="text-sm"></div>
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-semibold text-blue-800 mb-2">Business Description</h4>
+                        <div id="canvas-business-description" class="text-sm"></div>
                     </div>
-                    
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-2">
-                        <h4 class="font-semibold text-blue-800 mb-2">Customer Segments</h4>
-                        <div id="canvas-customer-segments" class="text-sm"></div>
-                    </div>
-                    
-                    <!-- Row 2 -->
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Key Resources</h4>
-                        <div id="canvas-key-resources" class="text-sm"></div>
-                    </div>
-                    
-                    <div class="canvas-box bg-blue-50 p-4 col-span-1 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Channels</h4>
-                        <div id="canvas-channels" class="text-sm"></div>
-                    </div>
-                    
-                    <!-- Row 3 -->
-                    <div class="canvas-box bg-blue-50 p-4 col-span-2 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Cost Structure</h4>
-                        <div id="canvas-cost-structure" class="text-sm"></div>
-                    </div>
-                    
-                    <div class="canvas-box bg-blue-50 p-4 col-span-3 row-span-1">
-                        <h4 class="font-semibold text-blue-800 mb-2">Revenue Streams</h4>
-                        <div id="canvas-revenue-streams" class="text-sm"></div>
-                    </div>
-                </div>
-                
-                <div class="bg-blue-50 p-4 rounded-lg">
-                    <h4 class="font-semibold text-blue-800 mb-2">Business Description</h4>
-                    <div id="canvas-business-description" class="text-sm"></div>
                 </div>
             </div>
         </main>
@@ -365,8 +608,19 @@
         </footer>
     </div>
     
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Select2
+            $('.select2-multi').select2({
+                tags: true,
+                placeholder: "Select options or type to add custom",
+                allowClear: true,
+                width: '100%'
+            });
+            
             // Variables
             let currentStep = 1;
             const totalSteps = 5;
@@ -383,6 +637,7 @@
             
             // Initialize
             updateProgressBar();
+            setupOtherInputs();
             
             // Event Listeners
             nextBtn.addEventListener('click', goToNextStep);
@@ -400,6 +655,31 @@
                     }
                 });
             });
+            
+            // Setup "Other" input fields
+            function setupOtherInputs() {
+                // Industry dropdown
+                document.getElementById('industry').addEventListener('change', function() {
+                    const otherInput = document.getElementById('industry-other');
+                    otherInput.style.display = this.value === 'Other' ? 'block' : 'none';
+                });
+                
+                // For all Select2 dropdowns with "Other" option
+                const selectIds = [
+                    'customer-segments', 'customer-relationships', 'channels',
+                    'value-propositions', 'unique-selling-point',
+                    'key-resources', 'key-activities', 'key-partners',
+                    'revenue-streams', 'cost-structure'
+                ];
+                
+                selectIds.forEach(id => {
+                    $(`#${id}`).on('change', function() {
+                        const values = $(this).val() || [];
+                        const otherInput = document.getElementById(`${id}-other`);
+                        otherInput.style.display = values.includes('Other') ? 'block' : 'none';
+                    });
+                });
+            }
             
             // Functions
             function goToNextStep() {
@@ -456,7 +736,17 @@
                 // Check if all required inputs have values
                 let isValid = true;
                 requiredInputs.forEach(input => {
-                    if (!input.value.trim()) {
+                    if (input.tagName === 'SELECT' && $(input).hasClass('select2-multi')) {
+                        // For Select2 multiple select
+                        const values = $(input).val();
+                        if (!values || values.length === 0) {
+                            $(input).next('.select2-container').css('border', '1px solid #ef4444');
+                            isValid = false;
+                        } else {
+                            $(input).next('.select2-container').css('border', 'none');
+                        }
+                    } else if (!input.value.trim()) {
+                        // For regular inputs
                         input.classList.add('border-red-500');
                         isValid = false;
                     } else {
@@ -478,17 +768,19 @@
                 const formData = {
                     businessName: document.getElementById('business-name').value,
                     businessDescription: document.getElementById('business-description').value,
-                    industry: document.getElementById('industry').value,
-                    customerSegments: document.getElementById('customer-segments').value,
-                    customerRelationships: document.getElementById('customer-relationships').value,
-                    channels: document.getElementById('channels').value,
-                    valuePropositions: document.getElementById('value-propositions').value,
-                    uniqueSellingPoint: document.getElementById('unique-selling-point').value,
-                    keyResources: document.getElementById('key-resources').value,
-                    keyActivities: document.getElementById('key-activities').value,
-                    keyPartners: document.getElementById('key-partners').value,
-                    revenueStreams: document.getElementById('revenue-streams').value,
-                    costStructure: document.getElementById('cost-structure').value
+                    industry: document.getElementById('industry').value === 'Other' ? 
+                        document.getElementById('industry-other-input').value : 
+                        document.getElementById('industry').value,
+                    customerSegments: getSegmentValues('customer-segments'),
+                    customerRelationships: getSegmentValues('customer-relationships'),
+                    channels: getSegmentValues('channels'),
+                    valuePropositions: getSegmentValues('value-propositions'),
+                    uniqueSellingPoint: getSegmentValues('unique-selling-point'),
+                    keyResources: getSegmentValues('key-resources'),
+                    keyActivities: getSegmentValues('key-activities'),
+                    keyPartners: getSegmentValues('key-partners'),
+                    revenueStreams: getSegmentValues('revenue-streams'),
+                    costStructure: getSegmentValues('cost-structure')
                 };
                 
                 // Generate the canvas
@@ -502,16 +794,41 @@
                 resultsSection.scrollIntoView({ behavior: 'smooth' });
             }
             
+            function getSegmentValues(segmentId) {
+                const select = document.getElementById(segmentId);
+                const values = Array.from($(select).val() || []);
+                
+                // If "Other" is selected, add the custom input value
+                if (values.includes('Other')) {
+                    const otherInput = document.getElementById(`${segmentId}-other-input`);
+                    if (otherInput && otherInput.value.trim()) {
+                        // Remove "Other" from the array
+                        const index = values.indexOf('Other');
+                        if (index > -1) {
+                            values.splice(index, 1);
+                        }
+                        
+                        // Add custom values (split by line)
+                        const customValues = otherInput.value.split('\n')
+                            .filter(line => line.trim() !== '')
+                            .map(line => line.trim());
+                        
+                        values.push(...customValues);
+                    }
+                }
+                
+                return values;
+            }
+            
             function generateCanvas(data) {
                 // Set business name and industry
                 document.getElementById('canvas-business-name').textContent = data.businessName;
                 document.getElementById('canvas-industry').textContent = data.industry;
                 
                 // Format and display text for each section
-                const formatText = (text) => {
-                    return text.split('\n')
-                        .filter(line => line.trim() !== '')
-                        .map(line => `<p class="mb-1">• ${line}</p>`)
+                const formatText = (items) => {
+                    return items
+                        .map(item => `<p class="mb-1">• ${item}</p>`)
                         .join('');
                 };
                 
@@ -547,6 +864,14 @@
                 // Reset form fields
                 form.reset();
                 
+                // Reset Select2 fields
+                $('.select2-multi').val(null).trigger('change');
+                
+                // Hide all "Other" input fields
+                document.querySelectorAll('.other-input').forEach(el => {
+                    el.style.display = 'none';
+                });
+                
                 // Go back to step 1
                 goToStep(1);
                 
@@ -559,30 +884,87 @@
             }
             
             function downloadCanvas() {
-                // Create a notification that would normally trigger download
-                const notification = document.createElement('div');
-                notification.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50';
-                notification.innerHTML = `
-                    <div class="flex items-center">
-                        <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <p>Business Model Canvas downloaded successfully!</p>
+                // Show loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.className = 'fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50 z-50';
+                loadingIndicator.innerHTML = `
+                    <div class="bg-white p-5 rounded-lg shadow-lg flex flex-col items-center">
+                        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mb-3"></div>
+                        <p class="text-gray-700">Generating PDF...</p>
                     </div>
                 `;
+                document.body.appendChild(loadingIndicator);
                 
-                document.body.appendChild(notification);
+                // Get the canvas element
+                const element = document.getElementById('canvas-for-pdf');
                 
-                // Remove notification after 3 seconds
-                setTimeout(() => {
-                    notification.style.opacity = '0';
-                    notification.style.transition = 'opacity 0.5s ease';
+                // Set options for html2pdf
+                const opt = {
+                    margin: 10,
+                    filename: `${document.getElementById('canvas-business-name').textContent.trim()}_Business_Model_Canvas.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+                };
+                
+                // Generate PDF
+                html2pdf().from(element).set(opt).save().then(() => {
+                    // Remove loading indicator
+                    document.body.removeChild(loadingIndicator);
+                    
+                    // Show success notification
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded shadow-lg z-50';
+                    notification.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <p>Business Model Canvas downloaded successfully!</p>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Remove notification after 3 seconds
                     setTimeout(() => {
-                        document.body.removeChild(notification);
-                    }, 500);
-                }, 3000);
+                        notification.style.opacity = '0';
+                        notification.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 3000);
+                }).catch(err => {
+                    // Remove loading indicator
+                    document.body.removeChild(loadingIndicator);
+                    
+                    // Show error notification
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50';
+                    notification.innerHTML = `
+                        <div class="flex items-center">
+                            <svg class="h-6 w-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                            <p>Error generating PDF. Please try again.</p>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    // Remove notification after 3 seconds
+                    setTimeout(() => {
+                        notification.style.opacity = '0';
+                        notification.style.transition = 'opacity 0.5s ease';
+                        setTimeout(() => {
+                            document.body.removeChild(notification);
+                        }, 500);
+                    }, 3000);
+                    
+                    console.error('PDF generation error:', err);
+                });
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9470ccb6660c05cc',t:'MTc0ODQ2NzI2NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9470ed9be5a6aa23',t:'MTc0ODQ2ODYxMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
