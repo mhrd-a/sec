@@ -683,12 +683,26 @@
                     margin: 10
                     filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 1 },
+                    html2canvas: {
+                        scale: 1,
+                        useCORS: true,
+                        scrollX: 0,
+                        scrollY: 0,
+                        windowWidth: document.documentElement.scrollWidth,
+                        windowHeight: document.documentElement.scrollHeight
+                    },
                     jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
                 };
-                
-                html2pdf().set(opt).from(canvasContainer).save();
-            }
+
+                    html2pdf()
+                        .set(opt)
+                        .from(canvasContainer)
+                        .save()
+                        .then(() => {
+                            // Restore overflow after capture
+                            canvasContainer.style.overflow = originalOverflow;
+                        });
+}
             
             // Event Listeners
             nextButtons.forEach(button => {
