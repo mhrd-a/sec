@@ -15,6 +15,11 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f0f9ff;
         }
+
+.header-bg {
+    background: linear-gradient(90deg, #2c5282 0%, #3182ce 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
         
         .canvas-box {
             border: 2px solid #3b82f6;
@@ -137,10 +142,10 @@
 <body>
     <div class="min-h-screen">
         <!-- Header -->
-        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-6 px-4 shadow-lg">
+        <header class="header-bg shadow-sm py-4">
             <div class="container mx-auto">
-                <h1 class="text-3xl md:text-4xl font-bold">Business Model Canvas Generator</h1>
-                <p class="mt-2 text-blue-100">Transform your startup idea into a structured business model</p>
+                <h1 class="text-2xl md:text-4xl font-bold">Business Model Canvas Generator</h1>
+                <p class="mt-2 text-gray-100">Transform your startup idea into a structured business model</p>
             </div>
         </header>
         
