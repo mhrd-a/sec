@@ -678,6 +678,13 @@
             function exportToPdf() {
                 const canvasContainer = document.getElementById('canvas-container');
                 const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
+
+                // Scroll to top before capturing to avoid rendering issues
+                window.scrollTo(0, 0);
+
+                // Temporarily remove scroll constraints if any
+                const originalOverflow = canvasContainer.style.overflow;
+                canvasContainer.style.overflow = 'visible';
                 
                 const opt = {
                     margin: 10
