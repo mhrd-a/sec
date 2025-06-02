@@ -301,14 +301,22 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Add note button click
-            addNoteBtn.addEventListener('click', function() {
+            let noteClicked = false;
+addNoteBtn.addEventListener('click', function() {
+    if (noteClicked) return;
+    noteClicked = true;
+    setTimeout(() => { noteClicked = false; }, 300);
                 // Find the first segment (or you could prompt the user to select a segment)
                 const firstSegment = document.querySelector('.canvas-segment');
                 addNote(firstSegment);
             });
             
             // Add emoji button click
-            addEmojiBtn.addEventListener('click', function() {
+            let emojiClicked = false;
+addEmojiBtn.addEventListener('click', function() {
+    if (emojiClicked) return;
+    emojiClicked = true;
+    setTimeout(() => { emojiClicked = false; }, 300);
                 emojiModal.classList.remove('hidden');
             });
             
