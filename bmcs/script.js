@@ -302,23 +302,28 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add note button click
             let noteClicked = false;
-addNoteBtn.addEventListener('click', function() {
-    if (noteClicked) return;
-    noteClicked = true;
-    setTimeout(() => { noteClicked = false; }, 300);
-                // Find the first segment (or you could prompt the user to select a segment)
-                const firstSegment = document.querySelector('.canvas-segment');
-                addNote(firstSegment);
-            });
+addNoteBtn.addEventListener('click', (() => {
+    let isClicked = false;
+    return function () {
+        if (isClicked) return;
+        isClicked = true;
+        const firstSegment = document.querySelector('.canvas-segment');
+        addNote(firstSegment);
+        setTimeout(() => { isClicked = false; }, 500);
+    };
+})());
             
             // Add emoji button click
             let emojiClicked = false;
-addEmojiBtn.addEventListener('click', function() {
-    if (emojiClicked) return;
-    emojiClicked = true;
-    setTimeout(() => { emojiClicked = false; }, 300);
-                emojiModal.classList.remove('hidden');
-            });
+addEmojiBtn.addEventListener('click', (() => {
+    let isClicked = false;
+    return function () {
+        if (isClicked) return;
+        isClicked = true;
+        emojiModal.classList.remove('hidden');
+        setTimeout(() => { isClicked = false; }, 500);
+    };
+})());
             
             // Close emoji modal
             closeEmojiModal.addEventListener('click', function() {
