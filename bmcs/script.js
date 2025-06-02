@@ -302,15 +302,9 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Add note button click
             addNoteBtn.addEventListener('click', function() {
-                // Find the first segment (or you could prompt the user to select a segment)
-                const firstSegment = document.querySelector('.canvas-segment');
-                addNote(firstSegment);
-            });
             
             // Add emoji button click
             addEmojiBtn.addEventListener('click', function() {
-                emojiModal.classList.remove('hidden');
-            });
             
             // Close emoji modal
             closeEmojiModal.addEventListener('click', function() {
@@ -962,3 +956,7 @@ document.addEventListener('DOMContentLoaded', function() {
             adjustCanvasHeight();
             window.addEventListener('resize', adjustCanvasHeight);
         });
+
+// Cleaned event bindings
+addNoteBtn.addEventListener('click', handleAddNote);
+addEmojiBtn.addEventListener('click', handleAddEmoji);
