@@ -301,14 +301,27 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Add note button click
-            addNoteBtn.addEventListener('click', function() {
+            
+function handleAddNote() {
+    const firstSegment = document.querySelector('.canvas-segment');
+    addNote(firstSegment);
+}
+addNoteBtn.removeEventListener('click', handleAddNote);
+addNoteBtn.addEventListener('click', handleAddNote);
+// addNoteBtn.addEventListener('click', function() {
                 // Find the first segment (or you could prompt the user to select a segment)
                 const firstSegment = document.querySelector('.canvas-segment');
                 addNote(firstSegment);
             });
             
             // Add emoji button click
-            addEmojiBtn.addEventListener('click', function() {
+            
+function handleAddEmoji() {
+    emojiModal.classList.remove('hidden');
+}
+addEmojiBtn.removeEventListener('click', handleAddEmoji);
+addEmojiBtn.addEventListener('click', handleAddEmoji);
+// addEmojiBtn.addEventListener('click', function() {
                 emojiModal.classList.remove('hidden');
             });
             
