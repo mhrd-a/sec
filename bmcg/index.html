@@ -1,0 +1,468 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Business Model Canvas Generator</title>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+<link href="style.css" rel="stylesheet"/></head>
+<body>
+<div class="min-h-screen">
+<!-- Header -->
+<header class="header-bg shadow-sm py-4">
+<div class="container mx-auto px-4">
+<div class="header-container flex justify-between items-center">
+<div class="header-content">
+<h1 class="text-2xl font-bold text-gray-100">Business Model Canvas Generator</h1>
+<h2 class="text-lg text-gray-100">Strome Entrepreneurial Center</h2>
+<p class="mt-8 italic text-purple-100">Transform your startup idea into a structured business model</p>
+</div>
+<div class="logo-container">
+<img alt="ODU Logo" class="h-auto w-40" src="https://www.odu.edu/sites/default/files/logos/univ/png-72dpi/odu-sig-noidea-fullcolor.png"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="container mx-auto px-4 py-8">
+<div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+<h2 class="text-2xl font-semibold text-gray-800 mb-4">How It Works</h2>
+<div class="flex flex-col md:flex-row gap-6">
+<div class="flex-1 bg-purple-50 p-4 rounded-lg">
+<div class="flex items-center mb-2">
+<div class="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-2">1</div>
+<h3 class="font-medium text-lg">Complete the Questionnaire</h3>
+</div>
+<p class="text-gray-600">Select from dropdown options or add custom entries for each component of the Business Model Canvas.</p>
+</div>
+<div class="flex-1 bg-purple-50 p-4 rounded-lg">
+<div class="flex items-center mb-2">
+<div class="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-2">2</div>
+<h3 class="font-medium text-lg">Submit Your Responses</h3>
+</div>
+<p class="text-gray-600">Review your answers and submit the form when you're ready to generate your canvas.</p>
+</div>
+<div class="flex-1 bg-purple-50 p-4 rounded-lg">
+<div class="flex items-center mb-2">
+<div class="bg-purple-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold mr-2">3</div>
+<h3 class="font-medium text-lg">Get Your Canvas</h3>
+</div>
+<p class="text-gray-600">Instantly receive a visual Business Model Canvas based on your responses that you can download or share.</p>
+</div>
+</div>
+</div>
+<!-- Questionnaire Form -->
+<div class="bg-white rounded-xl shadow-lg p-6" id="questionnaire-section">
+<h2 class="text-2xl font-semibold text-gray-800 mb-6">Business Model Questionnaire</h2>
+<!-- Progress Bar -->
+<div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+<div class="bg-purple-600 h-2.5 rounded-full" id="progress-bar" style="width: 0%"></div>
+</div>
+<!-- Steps Navigation -->
+<div class="flex flex-wrap gap-2 mb-8">
+<button class="step-btn active-step flex items-center bg-purple-50 px-3 py-2 rounded-lg" data-step="1">
+<div class="step-indicator">1</div>
+<span class="step-title">Basics</span>
+</button>
+<button class="step-btn flex items-center bg-purple-50 px-3 py-2 rounded-lg" data-step="2">
+<div class="step-indicator">2</div>
+<span class="step-title">Customer</span>
+</button>
+<button class="step-btn flex items-center bg-purple-50 px-3 py-2 rounded-lg" data-step="3">
+<div class="step-indicator">3</div>
+<span class="step-title">Offer</span>
+</button>
+<button class="step-btn flex items-center bg-purple-50 px-3 py-2 rounded-lg" data-step="4">
+<div class="step-indicator">4</div>
+<span class="step-title">Infrastructure</span>
+</button>
+<button class="step-btn flex items-center bg-purple-50 px-3 py-2 rounded-lg" data-step="5">
+<div class="step-indicator">5</div>
+<span class="step-title">Finances</span>
+</button>
+</div>
+<form id="business-model-form">
+<!-- Step 1: Basic Information -->
+<div class="step-content" id="step-1">
+<h3 class="text-xl font-medium text-gray-800 mb-4">Basic Information</h3>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="business-name">Business Name</label>
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="business-name" name="business-name" type="text"/>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="business-description">Brief Description of Your Business Idea</label>
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="business-description" name="business-description"></textarea>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="industry">Industry</label>
+<select class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="industry" name="industry">
+<option value="">Select an industry</option>
+<option value="Technology">Technology</option>
+<option value="Healthcare">Healthcare</option>
+<option value="Education">Education</option>
+<option value="Finance">Finance</option>
+<option value="Retail">Retail</option>
+<option value="Food &amp; Beverage">Food &amp; Beverage</option>
+<option value="Entertainment">Entertainment</option>
+<option value="Manufacturing">Manufacturing</option>
+<option value="Other">Other</option>
+</select>
+<div class="other-input" id="industry-other">
+<input class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="industry-other-input" placeholder="Please specify industry" type="text"/>
+</div>
+</div>
+</div>
+<!-- Step 2: Customer Segments, Relationships, Channels -->
+<div class="step-content hidden" id="step-2">
+<h3 class="text-xl font-medium text-gray-800 mb-4">Customer Information</h3>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="customer-segments">Customer Segments</label>
+<p class="text-sm text-gray-500 mb-2">Who are the most important customers for your business? Select all that apply or add your own.</p>
+<select class="select2-multi w-full" id="customer-segments" multiple="multiple" name="customer-segments[]">
+<option value="Young Adults (18-25)">Young Adults (18-25)</option>
+<option value="Adults (26-40)">Adults (26-40)</option>
+<option value="Middle-aged (41-60)">Middle-aged (41-60)</option>
+<option value="Seniors (60+)">Seniors (60+)</option>
+<option value="Parents">Parents</option>
+<option value="Students">Students</option>
+<option value="Professionals">Professionals</option>
+<option value="Small Businesses">Small Businesses</option>
+<option value="Enterprises">Enterprises</option>
+<option value="Government">Government</option>
+<option value="Non-profits">Non-profits</option>
+<option value="High-income Individuals">High-income Individuals</option>
+<option value="Budget-conscious Consumers">Budget-conscious Consumers</option>
+<option value="Tech Enthusiasts">Tech Enthusiasts</option>
+<option value="Health-conscious Individuals">Health-conscious Individuals</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="customer-segments-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="customer-segments-other-input" placeholder="Please specify other customer segments"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="customer-relationships">Customer Relationships</label>
+<p class="text-sm text-gray-500 mb-2">How will you establish and maintain relationships with each customer segment?</p>
+<select class="select2-multi w-full" id="customer-relationships" multiple="multiple" name="customer-relationships[]">
+<option value="Self-service">Self-service</option>
+<option value="Automated Services">Automated Services</option>
+<option value="Personal Assistance">Personal Assistance</option>
+<option value="Dedicated Personal Assistance">Dedicated Personal Assistance</option>
+<option value="Communities">Communities</option>
+<option value="Co-creation">Co-creation</option>
+<option value="Subscription Services">Subscription Services</option>
+<option value="Loyalty Programs">Loyalty Programs</option>
+<option value="24/7 Support">24/7 Support</option>
+<option value="Social Media Engagement">Social Media Engagement</option>
+<option value="Email Marketing">Email Marketing</option>
+<option value="Content Marketing">Content Marketing</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="customer-relationships-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="customer-relationships-other-input" placeholder="Please specify other customer relationships"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="channels">Channels</label>
+<p class="text-sm text-gray-500 mb-2">How will you reach and deliver value to your customers?</p>
+<select class="select2-multi w-full" id="channels" multiple="multiple" name="channels[]">
+<option value="Website">Website</option>
+<option value="Mobile App">Mobile App</option>
+<option value="Physical Store">Physical Store</option>
+<option value="Social Media">Social Media</option>
+<option value="Email">Email</option>
+<option value="Direct Sales">Direct Sales</option>
+<option value="Partner Stores">Partner Stores</option>
+<option value="Wholesalers">Wholesalers</option>
+<option value="Distributors">Distributors</option>
+<option value="E-commerce Platforms">E-commerce Platforms</option>
+<option value="Events &amp; Trade Shows">Events &amp; Trade Shows</option>
+<option value="Phone/Call Center">Phone/Call Center</option>
+<option value="Affiliate Marketing">Affiliate Marketing</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="channels-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="channels-other-input" placeholder="Please specify other channels"></textarea>
+</div>
+</div>
+</div>
+<!-- Step 3: Value Propositions -->
+<div class="step-content hidden" id="step-3">
+<h3 class="text-xl font-medium text-gray-800 mb-4">Value Proposition</h3>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="value-propositions">Value Propositions</label>
+<p class="text-sm text-gray-500 mb-2">What value do you deliver to customers? What problems are you solving?</p>
+<select class="select2-multi w-full" id="value-propositions" multiple="multiple" name="value-propositions[]">
+<option value="Newness">Newness (Innovative Product/Service)</option>
+<option value="Performance">Performance Improvement</option>
+<option value="Customization">Customization</option>
+<option value="Design">Superior Design</option>
+<option value="Brand/Status">Brand/Status</option>
+<option value="Price">Lower Price</option>
+<option value="Cost Reduction">Cost Reduction for Customers</option>
+<option value="Risk Reduction">Risk Reduction</option>
+<option value="Accessibility">Accessibility</option>
+<option value="Convenience">Convenience/Usability</option>
+<option value="Time Saving">Time Saving</option>
+<option value="Sustainability">Sustainability</option>
+<option value="Social Impact">Social Impact</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="value-propositions-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="value-propositions-other-input" placeholder="Please specify other value propositions"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="unique-selling-point">Unique Selling Point</label>
+<p class="text-sm text-gray-500 mb-2">What makes your offering different from competitors?</p>
+<select class="select2-multi w-full" id="unique-selling-point" multiple="multiple" name="unique-selling-point[]">
+<option value="Proprietary Technology">Proprietary Technology</option>
+<option value="Patents">Patents</option>
+<option value="Exclusive Features">Exclusive Features</option>
+<option value="Superior Quality">Superior Quality</option>
+<option value="Best Price">Best Price</option>
+<option value="Customer Service">Exceptional Customer Service</option>
+<option value="Speed">Speed/Efficiency</option>
+<option value="Expertise">Industry Expertise</option>
+<option value="Location">Strategic Location</option>
+<option value="Personalization">Personalization</option>
+<option value="Ecosystem">Complete Ecosystem/Solution</option>
+<option value="First Mover">First Mover Advantage</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="unique-selling-point-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="unique-selling-point-other-input" placeholder="Please specify other unique selling points"></textarea>
+</div>
+</div>
+</div>
+<!-- Step 4: Key Resources, Activities, Partners -->
+<div class="step-content hidden" id="step-4">
+<h3 class="text-xl font-medium text-gray-800 mb-4">Infrastructure</h3>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="key-resources">Key Resources</label>
+<p class="text-sm text-gray-500 mb-2">What key assets are required to make your business model work?</p>
+<select class="select2-multi w-full" id="key-resources" multiple="multiple" name="key-resources[]">
+<option value="Physical Assets">Physical Assets (buildings, vehicles, machines)</option>
+<option value="Intellectual Property">Intellectual Property (patents, copyrights, data)</option>
+<option value="Human Resources">Human Resources (talent, expertise)</option>
+<option value="Financial Resources">Financial Resources (cash, credit lines)</option>
+<option value="Technology">Technology (software, platforms)</option>
+<option value="Manufacturing Facilities">Manufacturing Facilities</option>
+<option value="Distribution Network">Distribution Network</option>
+<option value="Customer Base">Customer Base</option>
+<option value="Brand">Brand</option>
+<option value="Partnerships">Strategic Partnerships</option>
+<option value="Natural Resources">Natural Resources</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="key-resources-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="key-resources-other-input" placeholder="Please specify other key resources"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="key-activities">Key Activities</label>
+<p class="text-sm text-gray-500 mb-2">What key activities does your value proposition require?</p>
+<select class="select2-multi w-full" id="key-activities" multiple="multiple" name="key-activities[]">
+<option value="Production">Production</option>
+<option value="Problem Solving">Problem Solving</option>
+<option value="Platform/Network">Platform/Network Management</option>
+<option value="Supply Chain Management">Supply Chain Management</option>
+<option value="Research &amp; Development">Research &amp; Development</option>
+<option value="Marketing &amp; Sales">Marketing &amp; Sales</option>
+<option value="Customer Support">Customer Support</option>
+<option value="Content Creation">Content Creation</option>
+<option value="Software Development">Software Development</option>
+<option value="Consulting">Consulting</option>
+<option value="Training">Training</option>
+<option value="Distribution">Distribution</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="key-activities-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="key-activities-other-input" placeholder="Please specify other key activities"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="key-partners">Key Partners</label>
+<p class="text-sm text-gray-500 mb-2">Who are your key partners and suppliers?</p>
+<select class="select2-multi w-full" id="key-partners" multiple="multiple" name="key-partners[]">
+<option value="Suppliers">Suppliers</option>
+<option value="Strategic Alliances">Strategic Alliances (non-competitors)</option>
+<option value="Coopetition">Coopetition (strategic partnerships with competitors)</option>
+<option value="Joint Ventures">Joint Ventures</option>
+<option value="Distributors">Distributors</option>
+<option value="Retailers">Retailers</option>
+<option value="Technology Partners">Technology Partners</option>
+<option value="Outsourcing Partners">Outsourcing Partners</option>
+<option value="Investors">Investors</option>
+<option value="Government">Government</option>
+<option value="Universities/Research Institutions">Universities/Research Institutions</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="key-partners-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="key-partners-other-input" placeholder="Please specify other key partners"></textarea>
+</div>
+</div>
+</div>
+<!-- Step 5: Revenue Streams, Cost Structure -->
+<div class="step-content hidden" id="step-5">
+<h3 class="text-xl font-medium text-gray-800 mb-4">Financial Information</h3>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="revenue-streams">Revenue Streams</label>
+<p class="text-sm text-gray-500 mb-2">How will your business generate revenue?</p>
+<select class="select2-multi w-full" id="revenue-streams" multiple="multiple" name="revenue-streams[]">
+<option value="Asset Sale">Asset Sale</option>
+<option value="Usage Fee">Usage Fee</option>
+<option value="Subscription Fees">Subscription Fees</option>
+<option value="Lending/Renting/Leasing">Lending/Renting/Leasing</option>
+<option value="Licensing">Licensing</option>
+<option value="Brokerage Fees">Brokerage Fees</option>
+<option value="Advertising">Advertising</option>
+<option value="Freemium">Freemium</option>
+<option value="Commission">Commission</option>
+<option value="Transaction Fees">Transaction Fees</option>
+<option value="Data Sales">Data Sales</option>
+<option value="Franchise">Franchise</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="revenue-streams-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="revenue-streams-other-input" placeholder="Please specify other revenue streams"></textarea>
+</div>
+</div>
+<div class="mb-6">
+<label class="block text-gray-700 font-medium mb-2" for="cost-structure">Cost Structure</label>
+<p class="text-sm text-gray-500 mb-2">What are the most important costs in your business model?</p>
+<select class="select2-multi w-full" id="cost-structure" multiple="multiple" name="cost-structure[]">
+<option value="Fixed Costs">Fixed Costs (salaries, rent, utilities)</option>
+<option value="Variable Costs">Variable Costs (materials, commissions)</option>
+<option value="Economies of Scale">Economies of Scale</option>
+<option value="Economies of Scope">Economies of Scope</option>
+<option value="R&amp;D">Research &amp; Development</option>
+<option value="Manufacturing">Manufacturing</option>
+<option value="Marketing &amp; Sales">Marketing &amp; Sales</option>
+<option value="Customer Service">Customer Service</option>
+<option value="Technology Infrastructure">Technology Infrastructure</option>
+<option value="Logistics &amp; Distribution">Logistics &amp; Distribution</option>
+<option value="Human Resources">Human Resources</option>
+<option value="Other">Other (specify below)</option>
+</select>
+<div class="other-input mt-3" id="cost-structure-other">
+<textarea class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none" id="cost-structure-other-input" placeholder="Please specify other cost structure elements"></textarea>
+</div>
+</div>
+</div>
+<!-- Navigation Buttons -->
+<div class="flex justify-between mt-8">
+<button class="px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors hidden" id="prev-btn" type="button">Previous</button>
+<button class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors" id="next-btn" type="button">Next</button>
+<button class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors hidden" id="submit-btn" type="submit">Generate Canvas</button>
+</div>
+</form>
+</div>
+<!-- Results Section (Initially Hidden) -->
+<div class="bg-white rounded-xl shadow-lg p-6 mt-8 hidden" id="results-section">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-semibold text-gray-800">Your Business Model Canvas</h2>
+<div>
+<button class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors mr-2" id="download-btn">
+<svg class="h-5 w-5 inline-block mr-1" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" fill-rule="evenodd"></path>
+</svg>
+                            Download PDF
+                        </button>
+<button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" id="restart-btn">
+<svg class="h-5 w-5 inline-block mr-1" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+<path clip-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" fill-rule="evenodd"></path>
+</svg>
+                            Create New
+                        </button>
+</div>
+</div>
+<!-- Canvas for PDF Export -->
+<div id="canvas-for-pdf">
+<!-- PDF Title Section -->
+<div class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white py-4 px-4 rounded-t-lg mb-4">
+<h1 class="text-2xl md:text-3xl font-bold">Business Model Canvas Generator</h1>
+<p class="mt-1 text-purple-100">Transform your startup idea into a structured business model</p>
+</div>
+<div class="text-center mb-6" id="business-name-display">
+<h3 class="text-2xl font-bold text-purple-800" id="canvas-business-name"></h3>
+<p class="text-gray-600" id="canvas-industry"></p>
+</div>
+<!-- Business Model Canvas Grid -->
+<div class="grid grid-cols-10 gap-3 mb-6" id="canvas-container">
+<!-- Row 1 -->
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-2">
+<h4 class="font-semibold text-purple-800 mb-2">Key Partners</h4>
+<div class="text-sm" id="canvas-key-partners"></div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Key Activities</h4>
+<div class="text-sm" id="canvas-key-activities"></div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-2">
+<h4 class="font-semibold text-purple-800 mb-2">Value Propositions</h4>
+<div class="text-sm" id="canvas-value-propositions"></div>
+<div class="mt-3 pt-3 border-t border-purple-200">
+<h5 class="font-medium text-purple-700 mb-1">Unique Selling Point</h5>
+<div class="text-sm" id="canvas-unique-selling-point"></div>
+</div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Customer Relationships</h4>
+<div class="text-sm" id="canvas-customer-relationships"></div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-2">
+<h4 class="font-semibold text-purple-800 mb-2">Customer Segments</h4>
+<div class="text-sm" id="canvas-customer-segments"></div>
+</div>
+<!-- Row 2 -->
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Key Resources</h4>
+<div class="text-sm" id="canvas-key-resources"></div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-2 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Channels</h4>
+<div class="text-sm" id="canvas-channels"></div>
+</div>
+<!-- Row 3 - FIXED: Equal width for Cost Structure and Revenue Streams -->
+<div class="canvas-box bg-purple-50 p-4 col-span-5 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Cost Structure</h4>
+<div class="text-sm" id="canvas-cost-structure"></div>
+</div>
+<div class="canvas-box bg-purple-50 p-4 col-span-5 row-span-1">
+<h4 class="font-semibold text-purple-800 mb-2">Revenue Streams</h4>
+<div class="text-sm" id="canvas-revenue-streams"></div>
+</div>
+</div>
+<div class="bg-purple-50 p-4 rounded-lg">
+<h4 class="font-semibold text-purple-800 mb-2">Business Description</h4>
+<div class="text-sm" id="canvas-business-description"></div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-gray-800 text-white py-6 px-4 mt-12">
+<div class="container mx-auto">
+<div class="flex flex-col md:flex-row justify-between items-center">
+<div class="mb-4 md:mb-0">
+<h3 class="text-xl font-semibold">Business Model Canvas Generator</h3>
+<p class="text-gray-400">A tool for young entrepreneurs</p>
+</div>
+<div>
+<p class="text-gray-400">© 2023 Business Model Canvas Generator. All rights reserved.</p>
+</div>
+</div>
+</div>
+</footer>
+</div>
+
+
+
+
+<script src="script.js"></script></body>
+</html>
