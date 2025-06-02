@@ -76,14 +76,14 @@
         }
         
         .select2-container--default.select2-container--focus .select2-selection--multiple {
-            border-color: #3b82f6;
+            border-color: #4c1d95;
             outline: 0;
             box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
         }
         
         /* Fix for the delete (x) icon overlapping text - moved to left side */
         .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            background-color: #3b82f6;
+            background-color: #4c1d95;
             color: white;
             border: none;
             border-radius: 0.25rem;
