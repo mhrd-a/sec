@@ -1,5 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
-            // State management
+            
+function handleAddNote() {
+    const firstSegment = document.querySelector('.canvas-segment');
+    addNote(firstSegment);
+}
+
+function handleAddEmoji() {
+    emojiModal.classList.remove('hidden');
+}
+
+// State management
             const state = {
                 history: [],
                 currentState: -1,
@@ -301,27 +311,14 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             // Add note button click
-            
-function handleAddNote() {
-    const firstSegment = document.querySelector('.canvas-segment');
-    addNote(firstSegment);
-}
-addNoteBtn.removeEventListener('click', handleAddNote);
-addNoteBtn.addEventListener('click', handleAddNote);
-// addNoteBtn.addEventListener('click', function() {
+            addNoteBtn.addEventListener('click', handleAddNote); //
                 // Find the first segment (or you could prompt the user to select a segment)
                 const firstSegment = document.querySelector('.canvas-segment');
                 addNote(firstSegment);
             });
             
             // Add emoji button click
-            
-function handleAddEmoji() {
-    emojiModal.classList.remove('hidden');
-}
-addEmojiBtn.removeEventListener('click', handleAddEmoji);
-addEmojiBtn.addEventListener('click', handleAddEmoji);
-// addEmojiBtn.addEventListener('click', function() {
+            addEmojiBtn.addEventListener('click', handleAddEmoji); //
                 emojiModal.classList.remove('hidden');
             });
             
