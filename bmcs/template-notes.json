@@ -1,0 +1,56 @@
+{
+    "pokemon-go": {
+        "customer-segments": [
+            "Mobile gamers",
+            "Pok\u00e9mon fans",
+            "Families",
+            "Casual players",
+            "Location-based AR enthusiasts"
+        ],
+        "value-propositions": [
+            "Free-to-play AR gaming",
+            "Social interaction",
+            "Physical activity",
+            "Nostalgia-driven Pok\u00e9mon collecting"
+        ],
+        "channels": [
+            "App stores (iOS, Android)",
+            "Social media",
+            "In-game events",
+            "Niantic website"
+        ],
+        "customer-relationships": [
+            "Community-driven (events, forums)",
+            "Automated (in-game notifications)",
+            "Self-service (app tutorials)"
+        ],
+        "revenue-streams": [
+            "In-app purchases (Pok\u00e9Coins)",
+            "Sponsored locations (e.g., Starbucks Pok\u00e9Stops)",
+            "Event tickets"
+        ],
+        "key-resources": [
+            "AR technology",
+            "Pok\u00e9mon IP",
+            "Mobile app",
+            "Location data"
+        ],
+        "key-activities": [
+            "Game development",
+            "Server maintenance",
+            "Event organization",
+            "Marketing"
+        ],
+        "key-partners": [
+            "The Pok\u00e9mon Company",
+            "Sponsors (e.g., McDonald's)",
+            "App stores"
+        ],
+        "cost-structure": [
+            "Server costs",
+            "Development",
+            "Licensing fees",
+            "Marketing"
+        ]
+    }
+}
