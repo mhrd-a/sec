@@ -4,7 +4,11 @@
             font-family: 'Poppins', sans-serif;
             background-color: #f8fafc;
         }
-        
+
+.header-bg {
+    background: linear-gradient(90deg, #4c1d95 0%, #9333ea 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+}
         .canvas-section {
             border: 2px solid #e2e8f0;
             border-radius: 8px;
