@@ -142,26 +142,35 @@ function generateCanvas() {
 
 function exportToPdf() {
     const canvasContainer = document.getElementById('canvas-container');
-    const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
+    const projectName = document.getElementById('project-name').value || 'Business_Model_Canvas';
 
     const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
+        margin: 10,
+        filename: `${projectName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
             scale: 2,
             useCORS: true,
-            logging: false,
-            letterRendering: true,
-            windowWidth: 1200,
-            width: 1200
+            logging: false
         },
         jsPDF: {
             unit: 'mm',
             format: 'a3',
-            orientation: 'landscape',
-            compress: true
+            orientation: 'landscape'
         }
+    };
+
+    window.scrollTo(0, 0);
+
+    html2pdf()
+        .set(opt)
+        .from(canvasContainer)
+        .save()
+        .catch(err => {
+            console.error("PDF Export Error:", err);
+        });
+}
+
     };
 
     const tempContainer = canvasContainer.cloneNode(true);
