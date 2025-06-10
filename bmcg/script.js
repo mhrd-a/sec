@@ -176,18 +176,28 @@ function exportToPdf() {
         backgroundColor: "#ffffff"
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const pxToMm = px => px * 0.264583;
-
-        const imgWidth = pxToMm(canvas.width);
-        const imgHeight = pxToMm(canvas.height);
 
         const pdf = new jsPDF({
-            orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+            orientation: 'landscape',
             unit: 'mm',
-            format: [imgWidth, imgHeight]
+            format: 'a3'
         });
 
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
+        const pxToMm = px => px * 0.264583;
+        const imgWidthMm = pxToMm(canvas.width);
+        const imgHeightMm = pxToMm(canvas.height);
+
+        const scale = Math.min(pageWidth / imgWidthMm, pageHeight / imgHeightMm);
+        const displayWidth = imgWidthMm * scale;
+        const displayHeight = imgHeightMm * scale;
+
+        const x = (pageWidth - displayWidth) / 2;
+        const y = (pageHeight - displayHeight) / 2;
+
+        pdf.addImage(imgData, 'JPEG', x, y, displayWidth, displayHeight);
         pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
     }).catch(error => {
         console.error("Error creating PDF:", error);
