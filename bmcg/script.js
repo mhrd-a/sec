@@ -158,28 +158,37 @@ function generateCanvas() {
 }
 
 function exportToPdf() {
-    const canvasContainer = document.getElementById('canvas-container');
+    const container = document.getElementById('canvas-container');
     const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
-    html2canvas(canvasContainer, {
+    if (!container) {
+        console.error("Canvas container not found!");
+        return;
+    }
+
+    // Debug: force visible render and add border
+    container.style.border = "2px solid red";
+    container.style.background = "#fff";
+
+    html2canvas(container, {
         scale: 2,
         useCORS: true,
-        logging: true
+        logging: true,
+        backgroundColor: "#ffffff",
+        width: container.offsetWidth,
+        height: container.offsetHeight
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
+
         const pdf = new jsPDF({
             orientation: 'landscape',
-            unit: 'mm',
-            format: 'a3'
+            unit: 'px',
+            format: [canvas.width, canvas.height]
         });
 
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
         pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
-    }).catch(err => {
-        console.error("PDF generation error:", err);
+    }).catch(error => {
+        console.error("Error creating PDF:", error);
     });
 }
