@@ -150,3 +150,28 @@
             word-break: break-word;
             overflow-wrap: break-word;
         }
+
+
+
+/* === PDF Export Fixes === */
+#canvas-container {
+    background: white !important;
+    position: relative !important;
+    overflow: visible !important;
+    display: block !important;
+    transform: none !important;
+    box-shadow: none !important;
+    width: 1000px !important;
+    padding: 20px !important;
+    margin: 0 auto !important;
+}
+
+.canvas-section {
+    border: 1px solid #ccc !important;
+    background: white !important;
+    box-shadow: none !important;
+}
+
+body {
+    background: #fff !important;
+}
