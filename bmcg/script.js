@@ -1,5 +1,5 @@
+
 document.addEventListener('DOMContentLoaded', function () {
-    // Initialize Select2 for all segment selects
     $('.segment-select').select2({
         tags: true,
         placeholder: "Select or enter options",
@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Variables
     form = document.getElementById('canvas-form');
     questionnaireSection = document.getElementById('questionnaire-section');
     canvasResultSection = document.getElementById('canvas-result-section');
@@ -48,7 +47,6 @@ document.addEventListener('DOMContentLoaded', function () {
     updateProgress();
     showStep(1);
 
-    // Navigation buttons
     document.querySelectorAll('.next-btn').forEach(button => {
         button.addEventListener('click', () => showStep(currentStep + 1));
     });
@@ -62,10 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
         canvasResultSection.classList.add('hidden');
         questionnaireSection.classList.remove('hidden');
     });
-
     exportPdfBtn.addEventListener('click', exportToPdf);
 
-    // Step click listeners
     document.querySelectorAll('.step-link').forEach(link => {
         link.addEventListener('click', function () {
             const step = parseInt(this.getAttribute('data-step'));
@@ -76,7 +72,6 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Global scope variables
 let currentStep = 1;
 let totalSteps, formSections, form, progressFill, progressText, progressPercentage;
 let questionnaireSection, canvasResultSection, generateCanvasBtn, editFormBtn, exportPdfBtn;
@@ -171,39 +166,42 @@ function exportToPdf() {
         return;
     }
 
-    const opt = {
-        margin: [5, 5, 5, 5],
-        filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
-        image: { type: 'jpeg', quality: 1.0 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: true,
-            letterRendering: true,
-            windowWidth: 1200,
-            width: 1200
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a3',
-            orientation: 'landscape',
-            compress: true
-        }
-    };
-
     const tempContainer = canvasContainer.cloneNode(true);
     tempContainer.style.width = '1100px';
+    tempContainer.style.maxWidth = '1100px';
+    tempContainer.style.margin = '0 auto';
+    tempContainer.style.padding = '20px';
+    tempContainer.style.background = '#fff';
     tempContainer.style.position = 'absolute';
     tempContainer.style.left = '-9999px';
     tempContainer.style.top = '0';
     tempContainer.style.visibility = 'hidden';
     document.body.appendChild(tempContainer);
 
-    setTimeout(() => {
-        html2pdf().from(tempContainer).set(opt).save().then(() => {
-            document.body.removeChild(tempContainer);
-        }).catch(err => {
-            console.error("PDF export failed:", err);
+    html2canvas(tempContainer, {
+        scale: 2,
+        useCORS: true,
+        logging: true,
+        windowWidth: 1200,
+        width: 1100
+    }).then(canvas => {
+        const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pdf = new jsPDF({
+            orientation: 'landscape',
+            unit: 'mm',
+            format: 'a3'
         });
-    }, 100);
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgWidth = pageWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+        pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
+
+        document.body.removeChild(tempContainer);
+    }).catch(err => {
+        console.error("Canvas rendering failed:", err);
+        document.body.removeChild(tempContainer);
+    });
 }
