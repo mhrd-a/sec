@@ -166,21 +166,6 @@ function exportToPdf() {
     });
 }
 
-    const tempContainer = exportCanvas.cloneNode(true);
-    tempContainer.style.width = '1100px';
-    tempContainer.style.maxWidth = '1100px';
-    tempContainer.style.margin = '0';
-    tempContainer.style.padding = '10px';
-    tempContainer.style.visibility = 'hidden';
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px';
-    document.body.appendChild(tempContainer);
-
-    html2pdf().from(tempContainer).set(opt).save().then(() => {
-        document.body.removeChild(tempContainer);
-    });
-}
-
 // Navigation buttons
 document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.next-btn').forEach(button => {
