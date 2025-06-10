@@ -141,39 +141,32 @@ function generateCanvas() {
 }
 
 function exportToPdf() {
-    const canvasContainer = document.getElementById('canvas-container');
+    const exportCanvas = document.getElementById('canvas-container');
     const projectName = document.getElementById('project-name').value || 'Business_Model_Canvas';
 
+    // Set up export options
     const opt = {
         margin: 10,
-        filename: `${projectName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
+        filename: `${projectName}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a3',
-            orientation: 'landscape'
-        }
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
     };
-
+    
+    showNotification('Preparing PDF export...');
+    
     window.scrollTo(0, 0);
 
-    html2pdf()
-        .set(opt)
-        .from(canvasContainer)
-        .save()
-        .catch(err => {
-            console.error("PDF Export Error:", err);
-        });
+    // Generate PDF
+    html2pdf().set(opt).from(exportCanvas).save().then(() => {
+        showNotification('PDF exported successfully');
+    }).catch(err => {
+        showNotification('Error exporting PDF', 'error');
+        console.error(err);
+    });
 }
 
-    };
-
-    const tempContainer = canvasContainer.cloneNode(true);
+    const tempContainer = exportCanvas.cloneNode(true);
     tempContainer.style.width = '1100px';
     tempContainer.style.maxWidth = '1100px';
     tempContainer.style.margin = '0';
