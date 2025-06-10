@@ -166,7 +166,6 @@ function exportToPdf() {
         return;
     }
 
-    // Debug: force visible render and add border
     container.style.border = "2px solid red";
     container.style.background = "#fff";
 
@@ -174,19 +173,21 @@ function exportToPdf() {
         scale: 2,
         useCORS: true,
         logging: true,
-        backgroundColor: "#ffffff",
-        width: container.offsetWidth,
-        height: container.offsetHeight
+        backgroundColor: "#ffffff"
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
+        const pxToMm = px => px * 0.264583;
+
+        const imgWidth = pxToMm(canvas.width);
+        const imgHeight = pxToMm(canvas.height);
 
         const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'px',
-            format: [canvas.width, canvas.height]
+            orientation: imgWidth > imgHeight ? 'landscape' : 'portrait',
+            unit: 'mm',
+            format: [imgWidth, imgHeight]
         });
 
-        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
         pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
     }).catch(error => {
         console.error("Error creating PDF:", error);
