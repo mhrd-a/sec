@@ -62,6 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         canvasResultSection.classList.add('hidden');
         questionnaireSection.classList.remove('hidden');
     });
+
     exportPdfBtn.addEventListener('click', exportToPdf);
 
     // Step click listeners
@@ -165,6 +166,11 @@ function exportToPdf() {
     const canvasContainer = document.getElementById('canvas-container');
     const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
+    if (!canvasContainer) {
+        console.error("Canvas container not found!");
+        return;
+    }
+
     const opt = {
         margin: [5, 5, 5, 5],
         filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
@@ -172,7 +178,7 @@ function exportToPdf() {
         html2canvas: {
             scale: 2,
             useCORS: true,
-            logging: false,
+            logging: true,
             letterRendering: true,
             windowWidth: 1200,
             width: 1200
@@ -185,21 +191,19 @@ function exportToPdf() {
         }
     };
 
-    // Clone the container and render it off-screen
     const tempContainer = canvasContainer.cloneNode(true);
     tempContainer.style.width = '1100px';
-    tempContainer.style.maxWidth = '1100px';
-    tempContainer.style.margin = '0';
-    tempContainer.style.padding = '10px';
-    tempContainer.style.visibility = 'hidden';
     tempContainer.style.position = 'absolute';
     tempContainer.style.left = '-9999px';
+    tempContainer.style.top = '0';
+    tempContainer.style.visibility = 'hidden';
     document.body.appendChild(tempContainer);
 
-    // Wait briefly to ensure rendering
     setTimeout(() => {
         html2pdf().from(tempContainer).set(opt).save().then(() => {
             document.body.removeChild(tempContainer);
+        }).catch(err => {
+            console.error("PDF export failed:", err);
         });
     }, 100);
 }
