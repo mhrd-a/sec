@@ -145,32 +145,23 @@ function exportToPdf() {
     const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
     const opt = {
-        margin: 10,
+        margin: [5, 5, 5, 5],
         filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'jpeg', quality: 1.0 },
         html2canvas: {
             scale: 2,
             useCORS: true,
-            logging: false
+            logging: false,
+            letterRendering: true,
+            windowWidth: 1200,
+            width: 1200
         },
         jsPDF: {
             unit: 'mm',
             format: 'a3',
-            orientation: 'landscape'
+            orientation: 'landscape',
+            compress: true
         }
-    };
-
-    window.scrollTo(0, 0);
-
-    html2pdf()
-        .set(opt)
-        .from(canvasContainer)
-        .save()
-        .catch(err => {
-            console.error("PDF Export Error:", err);
-        });
-}
-
     };
 
     const tempContainer = canvasContainer.cloneNode(true);
