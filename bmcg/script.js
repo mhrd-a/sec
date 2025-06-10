@@ -158,48 +158,32 @@ function generateCanvas() {
 }
 
 function exportToPdf() {
-    const container = document.getElementById('canvas-container');
+    const canvasResultSection = document.getElementById('canvas-result-section');
+    const canvasContainer = document.getElementById('canvas-container');
     const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
-    if (!container) {
-        console.error("Canvas container not found!");
-        return;
-    }
+    // Temporarily show the canvas result section
+    const wasHidden = canvasResultSection.classList.contains('hidden');
+    if (wasHidden) canvasResultSection.classList.remove('hidden');
 
-    container.style.border = "2px solid red";
-    container.style.background = "#fff";
-
-    html2canvas(container, {
-        scale: 2,
-        useCORS: true,
-        logging: true,
-        backgroundColor: "#ffffff"
-    }).then(canvas => {
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-
-        const pdf = new jsPDF({
-            orientation: 'landscape',
+    const opt = {
+        margin: [5, 5, 5, 5],
+        filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
+        image: { type: 'jpeg', quality: 1.0 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: true
+        },
+        jsPDF: {
             unit: 'mm',
-            format: 'a3'
-        });
+            format: 'a3',
+            orientation: 'landscape'
+        }
+    };
 
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-
-        const pxToMm = px => px * 0.264583;
-        const imgWidthMm = pxToMm(canvas.width);
-        const imgHeightMm = pxToMm(canvas.height);
-
-        const scale = Math.min(pageWidth / imgWidthMm, pageHeight / imgHeightMm);
-        const displayWidth = imgWidthMm * scale;
-        const displayHeight = imgHeightMm * scale;
-
-        const x = (pageWidth - displayWidth) / 2;
-        const y = (pageHeight - displayHeight) / 2;
-
-        pdf.addImage(imgData, 'JPEG', x, y, displayWidth, displayHeight);
-        pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
-    }).catch(error => {
-        console.error("Error creating PDF:", error);
+    html2pdf().from(canvasContainer).set(opt).save().then(() => {
+        // Re-hide the section if it was hidden before
+        if (wasHidden) canvasResultSection.classList.add('hidden');
     });
 }
