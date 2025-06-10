@@ -161,29 +161,10 @@ function exportToPdf() {
     const canvasContainer = document.getElementById('canvas-container');
     const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
-    if (!canvasContainer) {
-        console.error("Canvas container not found!");
-        return;
-    }
-
-    const tempContainer = canvasContainer.cloneNode(true);
-    tempContainer.style.width = '1100px';
-    tempContainer.style.maxWidth = '1100px';
-    tempContainer.style.margin = '0 auto';
-    tempContainer.style.padding = '20px';
-    tempContainer.style.background = '#fff';
-    tempContainer.style.position = 'absolute';
-    tempContainer.style.left = '-9999px';
-    tempContainer.style.top = '0';
-    tempContainer.style.visibility = 'hidden';
-    document.body.appendChild(tempContainer);
-
-    html2canvas(tempContainer, {
+    html2canvas(canvasContainer, {
         scale: 2,
         useCORS: true,
-        logging: true,
-        windowWidth: 1200,
-        width: 1100
+        logging: true
     }).then(canvas => {
         const imgData = canvas.toDataURL('image/jpeg', 1.0);
         const pdf = new jsPDF({
@@ -198,10 +179,7 @@ function exportToPdf() {
 
         pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
         pdf.save(`${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`);
-
-        document.body.removeChild(tempContainer);
     }).catch(err => {
-        console.error("Canvas rendering failed:", err);
-        document.body.removeChild(tempContainer);
+        console.error("PDF generation error:", err);
     });
 }
