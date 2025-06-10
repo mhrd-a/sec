@@ -142,11 +142,11 @@ function generateCanvas() {
 
 function exportToPdf() {
     const canvasContainer = document.getElementById('canvas-container');
-    const projectName = document.getElementById('project-name').value || 'Business_Model_Canvas';
+    const startupName = document.getElementById('startup-name').value || 'Business_Model_Canvas';
 
     const opt = {
         margin: 10,
-        filename: `${projectName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
+        filename: `${startupName.replace(/\s+/g, '_')}_Business_Model_Canvas.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
             scale: 2,
