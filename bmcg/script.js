@@ -143,15 +143,13 @@ document.addEventListener('DOMContentLoaded', function () {
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
         const opt = {
             margin: 10,
-            filename: ${canvasTitle}.pdf,
+            filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3 },
+            html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
         html2pdf().set(opt).from(exportCanvas).save();
     }, { once: true });
-
-
 
     updateProgress();
     showStep(1);
