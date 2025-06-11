@@ -142,10 +142,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
         const opt = {
-            margin: 0,
+            margin: 10,
             filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: {
+                scale: 2,
+                scrollY: 0,
+                windowWidth: canvasContainer.scrollWidth
+            },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
         html2pdf().set(opt).from(exportCanvas).save();
