@@ -137,59 +137,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // Export PDF
     exportPdfBtn.addEventListener('click', function (event) {
         event.preventDefault();
-    
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
-    
-        // Clone the container
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
-    
-        // Create an off-screen wrapper
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'absolute';
-        wrapper.style.top = '0';
-        wrapper.style.left = '0';
-        wrapper.style.width = `${canvasContainer.scrollWidth}px`;
-        wrapper.style.height = `${canvasContainer.scrollHeight}px`;
-        wrapper.style.overflow = 'visible';
-        wrapper.style.visibility = 'hidden';  // Hide but render
-        wrapper.style.zIndex = '-1';
-        document.body.appendChild(wrapper);
-        wrapper.appendChild(exportCanvas);
-    
-        // Wait for rendering
-        setTimeout(() => {
-            const width = exportCanvas.scrollWidth;
-            const height = exportCanvas.scrollHeight;
-    
-            const opt = {
-                margin: 0,
-                filename: `${canvasTitle}.pdf`,
-                image: { type: 'jpeg', quality: 1 },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    width: width,
-                    height: height,
-                    windowWidth: width,
-                    windowHeight: height,
-                    scrollX: 0,
-                    scrollY: 0,
-                },
-                jsPDF: {
-                    unit: 'pt', // use points for better precision
-                    format: [width, height], // match canvas size
-                    orientation: width > height ? 'landscape' : 'portrait'
-                }
-            };
-    
-            html2pdf().set(opt).from(exportCanvas).save().then(() => {
-                document.body.removeChild(wrapper);
-            });
-        }, 300); // Small delay to ensure rendering
+        const opt = {
+            margin: 10,
+            filename: ${canvasTitle}.pdf,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 3 },
+            jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+        };
+        html2pdf().set(opt).from(exportCanvas).save();
     }, { once: true });
-
 
 
 
