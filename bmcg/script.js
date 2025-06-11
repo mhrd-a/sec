@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
         const opt = {
-            margin: 10,
+            margin: 0,
             filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
