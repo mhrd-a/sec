@@ -141,27 +141,27 @@ document.addEventListener('DOMContentLoaded', function () {
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
     
-        // Clone canvas
+        // Clone the container
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
     
-        // Create an invisible full-size container
+        // Create an off-screen wrapper
         const wrapper = document.createElement('div');
-        wrapper.style.position = 'fixed';
+        wrapper.style.position = 'absolute';
         wrapper.style.top = '0';
         wrapper.style.left = '0';
         wrapper.style.width = `${canvasContainer.scrollWidth}px`;
         wrapper.style.height = `${canvasContainer.scrollHeight}px`;
         wrapper.style.overflow = 'visible';
-        wrapper.style.opacity = '0';
-        wrapper.style.pointerEvents = 'none';
-        wrapper.style.zIndex = '-9999';
+        wrapper.style.visibility = 'hidden';  // Hide but render
+        wrapper.style.zIndex = '-1';
         document.body.appendChild(wrapper);
         wrapper.appendChild(exportCanvas);
     
-        // Wait for DOM to render fully
-        requestAnimationFrame(() => {
-            const rect = exportCanvas.getBoundingClientRect();
+        // Wait for rendering
+        setTimeout(() => {
+            const width = exportCanvas.scrollWidth;
+            const height = exportCanvas.scrollHeight;
     
             const opt = {
                 margin: 0,
@@ -169,21 +169,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 image: { type: 'jpeg', quality: 1 },
                 html2canvas: {
                     scale: 3,
+                    useCORS: true,
+                    width: width,
+                    height: height,
+                    windowWidth: width,
+                    windowHeight: height,
                     scrollX: 0,
                     scrollY: 0,
-                    width: rect.width,
-                    height: rect.height,
-                    windowWidth: rect.width,
-                    windowHeight: rect.height
                 },
-                jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+                jsPDF: {
+                    unit: 'pt', // use points for better precision
+                    format: [width, height], // match canvas size
+                    orientation: width > height ? 'landscape' : 'portrait'
+                }
             };
     
             html2pdf().set(opt).from(exportCanvas).save().then(() => {
                 document.body.removeChild(wrapper);
             });
-        });
+        }, 300); // Small delay to ensure rendering
     }, { once: true });
+
 
 
 
