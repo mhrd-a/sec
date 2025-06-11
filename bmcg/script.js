@@ -137,43 +137,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Export PDF
     exportPdfBtn.addEventListener('click', function (event) {
         event.preventDefault();
-    
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
-    
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
-    
-        exportCanvas.style.width = canvasContainer.scrollWidth + 'px';
-        exportCanvas.style.maxWidth = 'none';
-        exportCanvas.style.overflow = 'visible';
-    
-        const tempWrapper = document.createElement('div');
-        tempWrapper.style.position = 'absolute';
-        tempWrapper.style.left = '-9999px';
-        tempWrapper.style.top = '0';
-        tempWrapper.style.zIndex = '-1';
-        tempWrapper.style.width = 'auto';
-        tempWrapper.style.padding = '20px';
-        tempWrapper.appendChild(exportCanvas);
-        document.body.appendChild(tempWrapper);
-    
         const opt = {
-            margin: 0,
+            margin: 10,
             filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                scrollY: 0,
-                scrollX: 0,
-                windowWidth: exportCanvas.scrollWidth
-            },
+            html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
-    
-        html2pdf().set(opt).from(exportCanvas).save().then(() => {
-            document.body.removeChild(tempWrapper);
-        });
+        html2pdf().set(opt).from(exportCanvas).save();
     }, { once: true });
 
     updateProgress();
