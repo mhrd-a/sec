@@ -148,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
             html2canvas: {
                 scale: 2,
                 scrollY: 0,
+                scrollX: 0,
                 windowWidth: canvasContainer.scrollWidth
             },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
