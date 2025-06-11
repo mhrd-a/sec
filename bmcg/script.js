@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function () {
             margin: 10,
             filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
+            html2canvas: { scale: 3 },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
         html2pdf().set(opt).from(exportCanvas).save();
