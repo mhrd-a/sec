@@ -137,44 +137,18 @@ document.addEventListener('DOMContentLoaded', function () {
     // Export PDF
     exportPdfBtn.addEventListener('click', function (event) {
         event.preventDefault();
-    
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
-    
-        // Clone and clean the canvas
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
-    
-        // Create a wrapper to preserve dimensions
-        const wrapper = document.createElement('div');
-        wrapper.style.position = 'absolute';
-        wrapper.style.top = '-9999px';
-        wrapper.style.left = '-9999px';
-        wrapper.appendChild(exportCanvas);
-        document.body.appendChild(wrapper);
-    
-        const width = exportCanvas.scrollWidth;
-        const height = exportCanvas.scrollHeight;
-    
         const opt = {
-            margin: 0,
+            margin: 10,
             filename: `${canvasTitle}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 3,
-                width: width,
-                height: height,
-                windowWidth: width,
-                windowHeight: height,
-                scrollX: 0,
-                scrollY: 0
-            },
+            html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
-    
-        html2pdf().set(opt).from(exportCanvas).save().then(() => {
-            document.body.removeChild(wrapper);
-        });
+        html2pdf().set(opt).from(exportCanvas).save();
     }, { once: true });
 
     updateProgress();
