@@ -141,44 +141,50 @@ document.addEventListener('DOMContentLoaded', function () {
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
     
-        // Clone canvas and remove buttons
+        // Clone canvas
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
     
-        // Create a wrapper and style it to ensure full layout
+        // Create an invisible full-size container
         const wrapper = document.createElement('div');
-        wrapper.style.position = 'absolute';
-        wrapper.style.top = '-9999px';
-        wrapper.style.left = '-9999px';
-        wrapper.style.zIndex = '-1';
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = `${canvasContainer.scrollWidth}px`;
+        wrapper.style.height = `${canvasContainer.scrollHeight}px`;
         wrapper.style.overflow = 'visible';
+        wrapper.style.opacity = '0';
+        wrapper.style.pointerEvents = 'none';
+        wrapper.style.zIndex = '-9999';
         document.body.appendChild(wrapper);
         wrapper.appendChild(exportCanvas);
     
-        // Force layout calculation
-        const { width, height } = exportCanvas.getBoundingClientRect();
+        // Wait for DOM to render fully
+        requestAnimationFrame(() => {
+            const rect = exportCanvas.getBoundingClientRect();
     
-        const opt = {
-            margin: 0,
-            filename: `${canvasTitle}.pdf`,
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: {
-                scale: 3,
-                useCORS: true,
-                scrollX: 0,
-                scrollY: 0,
-                width: width,
-                height: height,
-                windowWidth: width,
-                windowHeight: height
-            },
-            jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
-        };
+            const opt = {
+                margin: 0,
+                filename: `${canvasTitle}.pdf`,
+                image: { type: 'jpeg', quality: 1 },
+                html2canvas: {
+                    scale: 3,
+                    scrollX: 0,
+                    scrollY: 0,
+                    width: rect.width,
+                    height: rect.height,
+                    windowWidth: rect.width,
+                    windowHeight: rect.height
+                },
+                jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
+            };
     
-        html2pdf().set(opt).from(exportCanvas).save().then(() => {
-            document.body.removeChild(wrapper);
+            html2pdf().set(opt).from(exportCanvas).save().then(() => {
+                document.body.removeChild(wrapper);
+            });
         });
     }, { once: true });
+
 
 
     updateProgress();
