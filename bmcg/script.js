@@ -141,33 +141,36 @@ document.addEventListener('DOMContentLoaded', function () {
         const canvasContainer = document.getElementById('canvas-container');
         const canvasTitle = document.getElementById('canvas-title').textContent.trim() || 'Business Model Canvas';
     
-        // Clone and clean the canvas
+        // Clone canvas and remove buttons
         const exportCanvas = canvasContainer.cloneNode(true);
         exportCanvas.querySelectorAll('button').forEach(btn => btn.remove());
     
-        // Create a wrapper to preserve dimensions
+        // Create a wrapper and style it to ensure full layout
         const wrapper = document.createElement('div');
         wrapper.style.position = 'absolute';
         wrapper.style.top = '-9999px';
         wrapper.style.left = '-9999px';
-        wrapper.appendChild(exportCanvas);
+        wrapper.style.zIndex = '-1';
+        wrapper.style.overflow = 'visible';
         document.body.appendChild(wrapper);
+        wrapper.appendChild(exportCanvas);
     
-        const width = exportCanvas.scrollWidth;
-        const height = exportCanvas.scrollHeight;
+        // Force layout calculation
+        const { width, height } = exportCanvas.getBoundingClientRect();
     
         const opt = {
             margin: 0,
             filename: `${canvasTitle}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: {
                 scale: 3,
+                useCORS: true,
+                scrollX: 0,
+                scrollY: 0,
                 width: width,
                 height: height,
                 windowWidth: width,
-                windowHeight: height,
-                scrollX: 0,
-                scrollY: 0
+                windowHeight: height
             },
             jsPDF: { unit: 'mm', format: 'a3', orientation: 'landscape' }
         };
@@ -176,6 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.body.removeChild(wrapper);
         });
     }, { once: true });
+
 
     updateProgress();
     showStep(1);
