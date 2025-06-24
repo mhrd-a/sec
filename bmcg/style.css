@@ -17,7 +17,18 @@
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
         }
-        
+
+        .header-bg {
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .canvas-segment {
             transition: all 0.3s ease;
             height: 100%;
