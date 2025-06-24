@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   AI Business Model Canvas Generator
+  </title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Poppins:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+ </head>
+ <body class="min-h-screen py-8">
+  <div class="container mx-auto px-4 max-w-7xl">
+   <header class="mb-8 text-center">
+    <h1 class="text-4xl font-bold text-gray-800 mb-2 bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
+     AI Business Model Canvas Generator
+    </h1>
+    <p class="text-gray-600 text-lg">
+     <strong>
+      Note:
+     </strong>
+     This tool is in development and for educational use only
+    </p>
+    <p class="text-gray-600 text-lg">
+     Fill in any segment and let AI help you complete your business model
+    </p>
+   </header>
+   <!-- Business Description Section -->
+   <div class="business-description rounded-xl shadow-lg p-6 mb-8">
+    <div class="flex justify-between items-center mb-4">
+     <div class="flex items-center">
+      <div class="segment-icon" style="background-color: #f97316;">
+       <i class="fas fa-lightbulb">
+       </i>
+      </div>
+      <h2 class="text-xl font-semibold text-gray-800">
+       Business Description
+      </h2>
+     </div>
+     <div class="text-sm text-gray-500">
+      Provide a brief overview of your business concept
+     </div>
+    </div>
+    <textarea class="w-full p-4 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" id="businessDescription" placeholder="Describe your business idea, mission, and vision in a few sentences..."></textarea>
+   </div>
+   <div class="mb-8 flex justify-end space-x-4 no-print">
+    <button class="hidden px-6 py-3 btn-gradient text-white rounded-lg shadow flex items-center" id="generateBtn">
+     <i class="fas fa-bolt mr-2">
+     </i>
+     Generate Other Segments
+    </button>
+    <button class="px-6 py-3 btn-secondary text-white rounded-lg shadow flex items-center" id="printBtn">
+     <i class="fas fa-print mr-2">
+     </i>
+     Print as PDF
+    </button>
+   </div>
+   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Top Row -->
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="key-partnerships">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon key-partnerships">
+        <i class="fas fa-handshake">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Key Partnerships
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-key-partnerships" type="checkbox"/>
+         <label for="toggle-key-partnerships">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="Who are your key partners and suppliers?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="key-activities">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon key-activities">
+        <i class="fas fa-tasks">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Key Activities
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-key-activities" type="checkbox"/>
+         <label for="toggle-key-activities">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="What key activities does your value proposition require?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="key-resources">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon key-resources">
+        <i class="fas fa-cubes">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Key Resources
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-key-resources" type="checkbox"/>
+         <label for="toggle-key-resources">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="What key resources does your value proposition require?"></textarea>
+    </div>
+   </div>
+   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Middle Row -->
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="value-propositions">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon value-propositions">
+        <i class="fas fa-gift">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Value Propositions
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-value-propositions" type="checkbox"/>
+         <label for="toggle-value-propositions">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="What value do you deliver to the customer?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="customer-relationships">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon customer-relationships">
+        <i class="fas fa-heart">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Customer Relationships
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-customer-relationships" type="checkbox"/>
+         <label for="toggle-customer-relationships">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="What type of relationship does each customer segment expect?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="customer-segments">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon customer-segments">
+        <i class="fas fa-users">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Customer Segments
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-customer-segments" type="checkbox"/>
+         <label for="toggle-customer-segments">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="Who are you creating value for?"></textarea>
+    </div>
+   </div>
+   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    <!-- Bottom Row -->
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="cost-structure">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon cost-structure">
+        <i class="fas fa-coins">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Cost Structure
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-cost-structure" type="checkbox"/>
+         <label for="toggle-cost-structure">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="What are the most important costs inherent in your business model?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="channels">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon channels">
+        <i class="fas fa-truck">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Channels
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-channels" type="checkbox"/>
+         <label for="toggle-channels">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="Through which channels do your customer segments want to be reached?"></textarea>
+    </div>
+    <div class="canvas-segment bg-white rounded-xl shadow-md p-5" data-segment="revenue-streams">
+     <div class="flex justify-between items-center mb-4">
+      <div class="flex items-center">
+       <div class="segment-icon revenue-streams">
+        <i class="fas fa-money-bill-wave">
+        </i>
+       </div>
+       <h2 class="font-semibold text-gray-800 text-lg">
+        Revenue Streams
+       </h2>
+      </div>
+      <div class="toggle-container hidden">
+       <div class="flex items-center">
+        <span class="mr-2 text-sm text-gray-600">
+         Freeze
+        </span>
+        <div class="toggle-switch">
+         <input class="freeze-toggle" id="toggle-revenue-streams" type="checkbox"/>
+         <label for="toggle-revenue-streams">
+          Toggle
+         </label>
+        </div>
+       </div>
+      </div>
+     </div>
+     <textarea class="w-full p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 outline-none text-base shadow-inner" placeholder="For what value are your customers willing to pay?"></textarea>
+    </div>
+   </div>
+   <div class="hidden text-center py-4 mb-6" id="generatingIndicator">
+    <div class="inline-flex items-center px-6 py-3 bg-indigo-100 text-indigo-800 rounded-lg shadow-md">
+     <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-indigo-600" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+      </circle>
+      <path class="opacity-75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" fill="currentColor">
+      </path>
+     </svg>
+     <span>
+      AI is generating segments...
+     </span>
+    </div>
+   </div>
+   <footer class="text-center text-gray-500 text-sm mt-12 mb-6 no-print">
+    <p>
+     © 2025 Strome Entrepreneurial Center (SEC). All rights reserved.
+    </p>
+   </footer>
+  </div>
+  <script src="script.js">
+  </script>
+ </body>
+</html>
